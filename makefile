@@ -4,7 +4,7 @@ showgen: showgen.o
 	g++ -o showgen showgen.o
 
 showgen.o: showgen.cpp
-	g++ -Wall -c showgen.cpp
+	g++ -Wall -pedantic -c showgen.cpp
 
 clean:
 	rm *.o
