@@ -4,6 +4,7 @@
 #include <cstring>
 #include <climits>
 #include <cerrno>
+
 using namespace std;
 
 typedef enum {
@@ -27,7 +28,7 @@ typedef enum {
   "456") to ints and places the result into i1 and i2. Returns the appropriate 
   conversionStatus_t.
 */
-conversionStatus_t handleSwitchIntInt(char* iStr1, char* iStr2, int& i1, int&i2);
+conversionStatus_t handleSwitchIntInt(char* str, int& i1, int& i2);
 
 /**
   Parse the command line args for values passed in.
@@ -105,7 +106,7 @@ cmdParseStatus_t readCommandLineArgs(int argc, char** argv, bool& autOutput,
       else if(strcmp(argv[i], "-tx") == 0 || strcmp(argv[i], "-ty") == 0 
           || strcmp(argv[i], "-wx") == 0 || strcmp(argv[i], "-wy") == 0) {
         int *lowPtr, *highPtr;
-        if(argc <= i + 2) {
+        if(argc <= i + 1) {
           return CMDPARSE_EXPECTED_VALUES;
         }
         if(strcmp(argv[i], "-tx") == 0) {
@@ -128,12 +129,12 @@ cmdParseStatus_t readCommandLineArgs(int argc, char** argv, bool& autOutput,
           highPtr = &wyHigh;
           wyGiven = true;
         }
-        convStatus = handleSwitchIntInt(argv[i+1], argv[i+2], *lowPtr, *highPtr);
+        convStatus = handleSwitchIntInt(argv[i+1], *lowPtr, *highPtr);
         if(convStatus != CONVERSION_SUCCESS) {
           return CMDPARSE_BAD_VALUES;
         }
-        /* don't parse argv[i+1] and argv[i+2] again */
-        i+=2;
+        /* don't parse argv[i+1] again */
+        i+=1;
       }
     }
     else {
@@ -143,26 +144,18 @@ cmdParseStatus_t readCommandLineArgs(int argc, char** argv, bool& autOutput,
   return CMDPARSE_SUCCESS;
 }
 
-conversionStatus_t handleSwitchIntInt(char* iStr1, char* iStr2, int& i1, int&i2) {
+conversionStatus_t handleSwitchIntInt(char* str, int& i1, int&i2) {
   conversionStatus_t convStat;
-  char* iStr1NoComma;
-  iStr1NoComma = (char*)malloc(strlen(iStr1) - 1);
-  if(!iStr1NoComma) {
-    return CONVERSION_MEMORY;
-  }
-  strncpy(iStr1NoComma, iStr1, strlen(iStr1) - 1);
-
-  convStat = strToInt(i1, iStr1NoComma);
-  free(iStr1NoComma);
+  char *iStr1, *iStr2; 
+  iStr1 = strtok(str, ",");
+  convStat = strToInt(i1, iStr1);
   if(convStat != CONVERSION_SUCCESS) {
     return convStat;
   }
-
+  /* read until null terminator */
+  iStr2 = strtok(NULL, "");
   convStat = strToInt(i2, iStr2);
-  if(convStat != CONVERSION_SUCCESS) {
-    return convStat;
-  }
-  return CONVERSION_SUCCESS;
+  return convStat;
 } 
 
 conversionStatus_t strToInt(int& intConv, const char* string) {
