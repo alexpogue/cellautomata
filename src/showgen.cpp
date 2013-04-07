@@ -27,14 +27,13 @@ typedef enum {
 } cmdParseStatus_t;
 
 /* 
-  Converts iStr1, which ends in a comma (ex. "123,") and iStr2, no comma (ex. 
-  "456") to ints and places the result into i1 and i2. Returns the appropriate 
-  conversionStatus_t.
+  Converts str (two comma-separated integers: ex. "123,123") into two integers
+  and puts them in i1 and i2, respectively.
 */
 conversionStatus_t handleSwitchIntInt(char* str, int& i1, int& i2);
 
 /**
-  Parse the command line args for values passed in.
+  Parse the command line args and fills references passed in.
 */
 cmdParseStatus_t readCommandLineArgs(int argc, char** argv, bool& autOutput, 
   bool& dispHelp, bool& txGiven, bool& tyGiven, bool& wxGiven, bool& wyGiven, 
@@ -49,8 +48,8 @@ cmdParseStatus_t readCommandLineArgs(int argc, char** argv, bool& autOutput,
 conversionStatus_t strToInt(int& intConv, const char* str);
 
 /**
-  Takes the passed in cmdParseStatus_t and prints out any errors in it. If 
-  cmdStatus == CMDPARSE_SUCCESS, then it returns without doing anything.
+  Prints the error message in parseStatus. If parseStatus == CMDPARSE_SUCCESS, 
+  then does nothing.
 */
 void printCmdParseError(cmdParseStatus_t parseStatus);
 
@@ -67,21 +66,10 @@ int main(int argc, char** argv) {
     printCmdParseError(cmdStatus);
     exit(1);
   }
-  /* TEST PRINTS
-  if(autOutput) cout << "autOutput\n";
-  if(dispHelp) cout << "dispHelp\n";
-  if(txGiven) cout << "txLow = " << txLow << ", txHigh = " << txHigh << "\n";
-  if(tyGiven) cout << "tyLow = " << tyLow << ", tyHigh = " << tyHigh << "\n";
-  if(wxGiven) cout << "wxLow = " << wxLow << ", wxHigh = " << wxHigh << "\n";
-  if(wyGiven) cout << "wyLow = " << wyLow << ", wyHigh = " << wyHigh << "\n";
-  if(genGiven) cout << "gen = " << numGenerations << "\n";
-  cout << "inputFile = " << inputFile << "\n";
-  */
   Point bl(txLow, tyLow);
   Point tr(txHigh, tyHigh);
   Rect tRange = Rect(bl, tr);
   GameGrid gg(tRange);
-  gg.setSquare(Point(0, 0), true);
   gg.printToFile(cout, false);
 }
 
@@ -111,8 +99,7 @@ cmdParseStatus_t readCommandLineArgs(int argc, char** argv, bool& autOutput,
           return CMDPARSE_BAD_VALUES;
         }
         genGiven = true;
-        /* don't parse argv[i+1] again */
-        ++i;
+        ++i; /* don't parse argv[i+1] again */
       }
       else if(strcmp(argv[i], "-tx") == 0 || strcmp(argv[i], "-ty") == 0 
           || strcmp(argv[i], "-wx") == 0 || strcmp(argv[i], "-wy") == 0) {
@@ -157,15 +144,14 @@ cmdParseStatus_t readCommandLineArgs(int argc, char** argv, bool& autOutput,
 
 conversionStatus_t handleSwitchIntInt(char* str, int& i1, int&i2) {
   conversionStatus_t convStat;
-  char *iStr1, *iStr2; 
-  iStr1 = strtok(str, ",");
-  convStat = strToInt(i1, iStr1);
+  char *iStr; 
+  iStr = strtok(str, ",");
+  convStat = strToInt(i1, iStr);
   if(convStat != CONVERSION_SUCCESS) {
     return convStat;
   }
-  /* read until null terminator */
-  iStr2 = strtok(NULL, "");
-  convStat = strToInt(i2, iStr2);
+  iStr = strtok(NULL, "");
+  convStat = strToInt(i2, iStr);
   return convStat;
 } 
 
