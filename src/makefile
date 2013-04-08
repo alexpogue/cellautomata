@@ -1,4 +1,4 @@
-all: showgen
+all: showgen test
 
 showgen: showgen.o GameGrid.o GridSquare.o Point.o Rect.o
 	g++ -o showgen showgen.o GameGrid.o GridSquare.o Point.o Rect.o
@@ -17,6 +17,18 @@ Point.o: Point.cpp Point.h
 
 Rect.o: Rect.cpp Rect.h Point.h
 	g++ -g -Wall -pedantic -c Rect.cpp
+
+AutPreprocessor.o: AutPreprocessor.cpp AutPreprocessor.h
+	g++ -g -Wall -pedantic -c AutPreprocessor.cpp
+
+test: TestMain.o AutPreprocessorTest.o AutPreprocessor.o
+	g++ -o test TestMain.o AutPreprocessorTest.o AutPreprocessor.o -lboost_unit_test_framework
+
+TestMain.o: TestMain.cpp
+	g++ -g -Wall -pedantic -c TestMain.cpp
+
+AutPreprocessorTest.o: AutPreprocessorTest.cpp AutPreprocessor.h
+	g++ -g -Wall -pedantic -c AutPreprocessorTest.cpp
 
 clean:
 	rm *.o
