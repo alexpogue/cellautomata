@@ -2,8 +2,6 @@
 #define BOOST_TEST_MODULE AutPreprocessor test
 #include <boost/test/unit_test.hpp>
 #include <string>
-#include <vector>
-#include <iostream>
 #include "AutPreprocessor.h"
 
 void checkStringArrayMatches(std::string model, std::string* arr, int size) {
@@ -132,10 +130,6 @@ Initial {\n\
   Y=-1:     2,3,4;      # Sets (2, -1), (3, -1), and (4, -1) to \"alive\"\n\
 };";
   std::string fullFilePre = AutPreprocessor::preprocess(fullFile);
-  std::cout<<"EXPECTED:\n";
-  std::cout<<fullFileExpected<<"\n";
-  std::cout<<"RECEIVED:\n";
-  std::cout<<fullFilePre<<"\n";
   BOOST_CHECK_EQUAL(fullFileExpected, fullFilePre); 
 }
 
