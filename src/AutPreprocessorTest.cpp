@@ -102,6 +102,43 @@ BOOST_AUTO_TEST_CASE(spcOutsideKeyword) {
   checkStringArrayMatches(whitespaceOutsideKeywordExpected, whitespaceOutsideKeywordStrs, 6);
 }
 
+BOOST_AUTO_TEST_CASE(noKeywordEnding) {
+  std::string noKeywordEndingExpected = "hi";
+  std::string trailingSpaces = AutPreprocessor::preprocess("hi \t\r\n");
+  std::string leadingSpaces = AutPreprocessor::preprocess(" \t\r\nhi");
+  std::string leadingAndTrailingSpaces = AutPreprocessor::preprocess(" \t\r\nhi \t\r\n");
+  std::string noKeywordEndingStrs[] = {trailingSpaces, leadingSpaces, leadingAndTrailingSpaces};
+  checkStringArrayMatches(noKeywordEndingExpected, noKeywordEndingStrs, 3); 
+}
+
+BOOST_AUTO_TEST_CASE(fullFile) {
+  std::string fullFileExpected = "This bogus keyword should cause everything to be ignored until the next semicolon, allowing for future expansion;Another{more evil bogus keyword;we must also consume;the inner bogus statements;};Xrange -10 10;Yrange -5 5;Initial{Y = 2 : -1;Y=1: -2, -1;Y=-1: 2,3,4;};";
+  std::string fullFile = "\
+#\n\
+# Comments, to be ignored\n\
+#\n\
+This bogus keyword should cause everything to be ignored\n\
+until the next semicolon, allowing for future expansion ;\n\n\
+\
+Another { more evil bogus keyword; we must also consume;\
+the inner bogus statements; };\n\
+# Ugly formatting, but allowed:\n\
+Xrange\n\
+-10 10; Yrange -5 5;\n\n\
+\
+Initial {\n\
+  Y = 2 :   -1;         # Sets (-1, 2) to \"alive\"\n\
+  Y=1:      -2, -1;     # Sets (-2, 1) and (-1, 1) to \"alive\"\n\
+  Y=-1:     2,3,4;      # Sets (2, -1), (3, -1), and (4, -1) to \"alive\"\n\
+};";
+  std::string fullFilePre = AutPreprocessor::preprocess(fullFile);
+  std::cout<<"EXPECTED:\n";
+  std::cout<<fullFileExpected<<"\n";
+  std::cout<<"RECEIVED:\n";
+  std::cout<<fullFilePre<<"\n";
+  BOOST_CHECK_EQUAL(fullFileExpected, fullFilePre); 
+}
+
 BOOST_AUTO_TEST_CASE(comments) {
   std::string commentsExpected = "hi;";
   std::string commentWithSemi = AutPreprocessor::preprocess("hi;#;invisible;");
