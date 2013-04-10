@@ -26,3 +26,11 @@ Point Rect::getBottomLeft() const {
 Point Rect::getTopRight() const {
   return tRight;
 }
+
+unsigned int Rect::getWidth() const {
+  return tRight.getX() - bLeft.getX();
+}
+
+unsigned int Rect::getHeight() const {
+  return tRight.getY() - bLeft.getY();
+}

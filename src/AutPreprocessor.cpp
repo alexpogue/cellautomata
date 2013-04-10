@@ -76,6 +76,7 @@ size_t preprocessKeyword(std::string& autText, size_t pos) {
   }
   if(isWhitespace(autText[keywordEndingPos - 1])) {
     autText.erase(keywordEndingPos - 1, 1);
+    --pos;
   }
   return pos + 1;
 }

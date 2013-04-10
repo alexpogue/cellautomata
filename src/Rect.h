@@ -14,6 +14,8 @@ class Rect {
     void setTopRight(Point p);
     Point getBottomLeft() const;
     Point getTopRight() const; 
+    unsigned int getWidth() const;
+    unsigned int getHeight() const;
 };
 
 #endif

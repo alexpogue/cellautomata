@@ -31,9 +31,15 @@ BOOST_AUTO_TEST_CASE(statements) {
   std::string endCurlies = AutPreprocessor::preprocess("out{inner;inner;};next{nextinner;};");
   std::string endCurliesExpected = "out{inner;inner;};next{nextinner;};";
   std::string endCurliesWithSpaces = AutPreprocessor::preprocess("out  {  inner;  inner;  }  ;  next{nextinner  ;  }  ;  ");
+  std::string curliesWithSpaces = AutPreprocessor::preprocess("  {   { {{  {");
+  std::string curliesWithSpacesExpected = "{{{{{";
+  std::string endWithoutKeywordEnd = AutPreprocessor::preprocess("hello      ");
+  std::string endWithoutKeywordEndExpected = "hello";
   BOOST_CHECK_EQUAL(lotsOfWhiteExpected, lotsOfWhite);
   BOOST_CHECK_EQUAL(endCurlies, endCurliesExpected);
   BOOST_CHECK_EQUAL(endCurliesWithSpaces, endCurliesExpected);
+  BOOST_CHECK_EQUAL(curliesWithSpacesExpected, curliesWithSpaces);
+  BOOST_CHECK_EQUAL(endWithoutKeywordEndExpected, endWithoutKeywordEnd);
 }
 
 BOOST_AUTO_TEST_CASE(leadingSpace) {

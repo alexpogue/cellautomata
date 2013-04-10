@@ -53,13 +53,19 @@ void GameGrid::printRow(const int& row, std::ostream& out,
 }
 
 unsigned int GameGrid::getTerrainWidth() const {
-  return terrainBounds.getTopRight().getX() 
-    - terrainBounds.getBottomLeft().getX() + 1;
+  return terrainBounds.getWidth();
 }
 
 unsigned int GameGrid::getTerrainHeight() const {
-  return terrainBounds.getTopRight().getY()
-    - terrainBounds.getBottomLeft().getY() + 1;
+  return terrainBounds.getHeight();
+}
+
+unsigned int GameGrid::getWindowWidth() const {
+  return windowBounds.getWidth();
+}
+
+unsigned int GameGrid::getWindowHeight() const {
+  return windowBounds.getHeight();
 }
 
 void GameGrid::setSquare(const Point& p, const bool& alive) {
