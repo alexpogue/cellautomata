@@ -39,5 +39,5 @@ AutParserTest.o: AutParserTest.cpp AutParser.h GameGrid.h Rect.h Point.h
 clean:
 	rm *.o
 
-project.tar.gz: makefile showgen.cpp
-	tar -czf project.tar.gz makefile showgen.cpp
+project.tar.gz: makefile showgen.cpp AutParser.cpp AutParser.h AutParserTest.cpp AutPreprocessor.cpp AutPreprocessor.h AutPreprocessorTest.cpp GameGrid.cpp GameGrid.h GridSquare.cpp GridSquare.h Point.cpp Point.h Rect.cpp Rect.h TestMain.cpp
+	tar -czf project.tar.gz makefile showgen.cpp AutParser.cpp AutParser.h AutParserTest.cpp AutPreprocessor.cpp AutPreprocessor.h AutPreprocessorTest.cpp GameGrid.cpp GameGrid.h GridSquare.cpp GridSquare.h Point.cpp Point.h Rect.cpp Rect.h TestMain.cpp
