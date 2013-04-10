@@ -21,7 +21,7 @@ Rect.o: Rect.cpp Rect.h Point.h
 AutPreprocessor.o: AutPreprocessor.cpp AutPreprocessor.h
 	g++ -g -Wall -pedantic -c AutPreprocessor.cpp
 
-test: TestMain.o AutPreprocessorTest.o AutPreprocessor.o
+test: TestMain.o AutPreprocessorTest.o AutPreprocessor.o AutParserTest.o AutParser.o
 	g++ -o test TestMain.o AutPreprocessorTest.o AutPreprocessor.o -lboost_unit_test_framework
 
 TestMain.o: TestMain.cpp
@@ -29,6 +29,12 @@ TestMain.o: TestMain.cpp
 
 AutPreprocessorTest.o: AutPreprocessorTest.cpp AutPreprocessor.h
 	g++ -g -Wall -pedantic -c AutPreprocessorTest.cpp
+
+AutParser.o: AutParser.cpp AutParser.h GameGrid.h
+	g++ -g -Wall -pedantic -c AutParser.cpp
+
+AutParserTest.o: AutParserTest.cpp AutParser.h GameGrid.h Rect.h Point.h
+	g++ -g -Wall -pedantic -c AutParserTest.cpp
 
 clean:
 	rm *.o
