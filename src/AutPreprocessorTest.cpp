@@ -139,6 +139,15 @@ BOOST_AUTO_TEST_CASE(comments) {
   std::string commentWithCurly = AutPreprocessor::preprocess("hi;#{invisible;");
   std::string commentWithComment = AutPreprocessor::preprocess("hi;##invisible");
   std::string commentInsideKeyword = AutPreprocessor::preprocess("hi#comment\n;");
-  std::string commentStrs[] = {commentWithSemi, commentWithCurly, commentWithComment};
-  checkStringArrayMatches(commentsExpected, commentStrs, 3);
+  std::string commentBeforeSpace = AutPreprocessor::preprocess("hi#comment\n ;");
+  std::string commentStrs[] = {commentWithSemi, commentWithCurly, commentWithComment, commentInsideKeyword, commentBeforeSpace};
+  checkStringArrayMatches(commentsExpected, commentStrs, 5);
+}
+
+BOOST_AUTO_TEST_CASE(commentAsWhitespace) {
+  std::string expected = "hello world;";
+  std::string testCommentBetween = AutPreprocessor::preprocess("hello#comment\nworld;");
+  std::string testCommentAndSpaceBetween = AutPreprocessor::preprocess("hello #comment\n #comment\n #comment\n world;");
+  std::string commentAsWhitespaceStrs[] = {testCommentBetween, testCommentAndSpaceBetween};
+  checkStringArrayMatches(expected, commentAsWhitespaceStrs, 2);
 }

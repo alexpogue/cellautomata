@@ -68,12 +68,26 @@ size_t preprocessKeyword(std::string& autText, size_t pos) {
   for(; pos < keywordEndingPos; pos++) {
     if(autText[pos] == '#') {
       keywordEndingPos -= removeLine(autText, pos);
+      if(isWhitespace(autText[pos-1])) {
+        /* if there's a space behind char at pos, parse it again so we don't
+        add unnecessary spaces after the comment */
+        --pos;
+      }
+      else {
+        /* otherwise, insert a space because comments count as whitespace, we 
+        will parse it again  */
+        autText.insert(pos, " ");
+        ++keywordEndingPos;
+      }
+      /* decrement to parse char directly after removed line */
+      --pos;
     }
     else if(isWhitespace(autText[pos])) {
       autText.replace(pos, 1, " ");
       keywordEndingPos -= removeLeadingWhitespace(autText, pos+1); 
     }
   }
+  /* only one whitespace can remain at this point */
   if(isWhitespace(autText[keywordEndingPos - 1])) {
     autText.erase(keywordEndingPos - 1, 1);
     --pos;
