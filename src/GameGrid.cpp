@@ -2,12 +2,16 @@
 /* TODO: REMOVE. FOR TEST ERROR MESSAGES */
 #include <iostream>
 
-GameGrid::GameGrid(const Rect& terrain, const Rect& window) { 
-  initialize(terrain, window); 
+GameGrid::GameGrid() {
+  initialize(Rect(), Rect());
 }
 
 GameGrid::GameGrid(const Rect& terrain) {
   initialize(terrain, terrain);
+}
+
+GameGrid::GameGrid(const Rect& terrain, const Rect& window) { 
+  initialize(terrain, window); 
 }
 
 void GameGrid::initialize(const Rect& terrain, const Rect& window) {
@@ -60,18 +64,26 @@ unsigned int GameGrid::getTerrainHeight() const {
   return terrainBounds.getHeight();
 }
 
+unsigned int GameGrid::getWindowHeight() const {
+  return windowBounds.getHeight();
+}
+
 unsigned int GameGrid::getWindowWidth() const {
   return windowBounds.getWidth();
 }
 
-unsigned int GameGrid::getWindowHeight() const {
-  return windowBounds.getHeight();
+void GameGrid::setTerrainBounds(const Rect& bounds) {
+  terrainBounds = bounds;
+}
+
+void GameGrid::setWindowBounds(const Rect& bounds) {
+  windowBounds = bounds;
 }
 
 void GameGrid::setSquare(const Point& p, const bool& alive) {
   unsigned int normalizedX = p.getX() - terrainBounds.getBottomLeft().getX();
   unsigned int normalizedY = p.getY() - terrainBounds.getBottomLeft().getY();
-  if(normalizedY >= getTerrainWidth() || normalizedX >= getTerrainHeight()) {
+  if(normalizedY >= getTerrainHeight() || normalizedX >= getTerrainWidth()) {
     std::cerr << "Tried to set out of bounds GridSquare at (" << p.getX() << ", " << p.getY() << ")\n";
     return;
   }
