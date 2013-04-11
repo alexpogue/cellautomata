@@ -5,7 +5,7 @@
 
 class AutParser {
   public: 
-    static GameGrid parse(const std::string& rawAutText);    
+    static void parse(const std::string& rawAutText, GameGrid& gg);    
 };
 
 #endif

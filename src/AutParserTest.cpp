@@ -4,17 +4,24 @@
 #include "GameGrid.h"
 #include "Point.h"
 #include "Rect.h"
+#include <iostream>
 
 void checkGridsEqual(GameGrid &expected, GameGrid &test) {
   BOOST_CHECK_EQUAL(expected.getTerrainHeight(), test.getTerrainHeight());
   BOOST_CHECK_EQUAL(expected.getTerrainWidth(), test.getTerrainWidth());
   BOOST_CHECK_EQUAL(expected.getWindowHeight(), test.getWindowHeight());
   BOOST_CHECK_EQUAL(expected.getWindowWidth(), test.getWindowWidth());
-  for(unsigned int i = 0; i < expected.getTerrainHeight(); i++) {
-    for(unsigned int j = 0; j < expected.getTerrainWidth(); j++) {
-      Point p(j, i);
-      BOOST_CHECK_EQUAL(expected.isSquareAlive(p), test.isSquareAlive(p));
+  if(expected.getTerrainHeight() == test.getTerrainHeight()
+      && expected.getTerrainWidth() == test.getTerrainWidth()) {
+    for(unsigned int i = 0; i < expected.getTerrainHeight(); i++) {
+      for(unsigned int j = 0; j < expected.getTerrainWidth(); j++) {
+        Point p(j, i);
+        BOOST_CHECK_EQUAL(expected.isSquareAlive(p), test.isSquareAlive(p));
+      }
     }
+  }
+  else {
+    BOOST_ERROR("Terrain is not the same size");
   }
 }    
 
@@ -40,7 +47,8 @@ Y = 2 : -1;\n\
 Y = 1 : -2, 1;\n\
 Y = -1 : 2, 3, 4;\n\
 };\n";
-  GameGrid testGrid(AutParser::parse(fileContents));
+  GameGrid testGrid;
+  AutParser::parse(fileContents, testGrid);
   checkGridsEqual(expectedGrid, testGrid);
 }
 
@@ -54,7 +62,8 @@ Y= 2 : -1;\n\
 Y =1 : -2, 1;\n\
 Y = -1:2,3, 4;\n\
 };\n";
-  GameGrid testGrid(AutParser::parse(fileContents));
+  GameGrid testGrid;
+  AutParser::parse(fileContents, testGrid);
   checkGridsEqual(expectedGrid, testGrid);
 }
 
@@ -70,7 +79,8 @@ Y = 1 : -2, 1;#comment\n\
 Y = -1 : 2, 3, 4;#comment\n\
 };#comment\n\
 #comment";
-  GameGrid testGrid(AutParser::parse(fileContents));
+  GameGrid testGrid;
+  AutParser::parse(fileContents, testGrid);
   checkGridsEqual(expectedGrid, testGrid);
 }
 
@@ -95,6 +105,7 @@ Y = 1 \n\
 : -2, 1;\n\
 Y = -1 : 2, 3, 4;\n\
 };\n";
-  GameGrid testGrid(AutParser::parse(fileContents));
+  GameGrid testGrid;
+  AutParser::parse(fileContents, testGrid);
   checkGridsEqual(expectedGrid, testGrid);
 }
