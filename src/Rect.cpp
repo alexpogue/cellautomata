@@ -19,6 +19,22 @@ void Rect::setTopRight(Point p) {
   tRight = p;
 }
 
+void Rect::setXLow(int xLow) {
+  setBottomLeft(Point(xLow, getBottomLeft().getY()));
+}
+
+void Rect::setXHigh(int xHigh) {
+  setTopRight(Point(xHigh, getTopRight().getY()));
+}
+
+void Rect::setYLow(int yLow) {
+  setBottomLeft(Point(getBottomLeft().getX(), yLow));
+}
+
+void Rect::setYHigh(int yHigh) {
+  setTopRight(Point(getTopRight().getX(), yHigh));
+}
+
 Point Rect::getBottomLeft() const {
   return bLeft;
 }
