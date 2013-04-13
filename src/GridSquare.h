@@ -11,6 +11,7 @@ class GridSquare {
   public:
     GridSquare(const Point& p, const bool& isAlive);
     GridSquare(const Point& p);
+    GridSquare();
     void setAlive(const bool& isAlive);
     bool isAlive() const;
     Point getLocation() const;

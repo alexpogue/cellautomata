@@ -9,6 +9,10 @@ GridSquare::GridSquare(const Point& p) {
   initialize(p, false);
 }
 
+GridSquare::GridSquare() {
+  initialize(Point(0, 0), false);
+}
+
 void GridSquare::initialize(const Point& p, const bool& isAlive) {
   location = p;
   alive = isAlive;
