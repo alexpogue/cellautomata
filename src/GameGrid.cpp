@@ -17,10 +17,10 @@ GameGrid::GameGrid(const Rect& terrain, const Rect& window) {
 void GameGrid::initialize(const Rect& terrain, const Rect& window) {
   terrainBounds = Rect(terrain);
   windowBounds = Rect(window);
-  fillWithZeros();
+  resetGrid();
 }
 
-void GameGrid::fillWithZeros() {
+void GameGrid::resetGrid() {
   for(unsigned int i = 0; i < getTerrainHeight(); i++) {
     std::vector<GridSquare> cur;
     for(unsigned int j = 0; j < getTerrainWidth(); j++) {
@@ -70,10 +70,6 @@ unsigned int GameGrid::getWindowHeight() const {
 
 unsigned int GameGrid::getWindowWidth() const {
   return windowBounds.getWidth();
-}
-
-void GameGrid::setTerrainBounds(const Rect& bounds) {
-  terrainBounds = bounds;
 }
 
 void GameGrid::setWindowBounds(const Rect& bounds) {

@@ -30,18 +30,17 @@ class GameGrid {
     std::vector< std::vector<GridSquare> > grid;
     Rect terrainBounds;
     Rect windowBounds;
-    void fillWithZeros();
     void printRow(const int& row, std::ostream& outStream, const bool& autOutput) const;
     void initialize(const Rect& terrainBounds, const Rect& windowBounds);
   public:
     GameGrid();
     GameGrid(const Rect& terrainBounds);
     GameGrid(const Rect& terrainBounds, const Rect& windowBounds);
+    void resetGrid();
     unsigned int getTerrainHeight() const;
     unsigned int getTerrainWidth() const;
     unsigned int getWindowHeight() const;
     unsigned int getWindowWidth() const;
-    void setTerrainBounds(const Rect& bounds);
     void setWindowBounds(const Rect& bounds);
     void printToFile(std::ostream& out, const bool& autOutput) const;
     void setSquare(const Point& p, const bool& alive);
