@@ -32,6 +32,21 @@ class GameGrid {
     Rect windowBounds;
     void printRow(const int& row, std::ostream& outStream, const bool& autOutput) const;
     void initialize(const Rect& terrainBounds, const Rect& windowBounds);
+    void serializePoint(unsigned int& normX, unsigned int& normY, const Point& p);
+    void normalizePoint(Point& pSerial, const unsigned int& normX, const unsigned int& normY);
+    void changeRowsTop(const int& delta);
+    void changeRowsBottom(const int& delta);
+    void changeColsLeft(const int& delta);
+    void changeColsRight(const int& delta);
+    void addRowsTop(const unsigned int& numRows);
+    void addRowsBottom(const unsigned int& numRows);
+    void addColsRight(const unsigned int& numCols);
+    void addColsLeft(const unsigned int& numCols);
+    void removeRowsTop(const unsigned int& numRows);
+    void removeRowsBottom(const unsigned int& numRows);
+    void removeColsRight(const unsigned int& numCols);
+    void removeColsLeft(const unsigned int& numCols);
+
   public:
     GameGrid();
     GameGrid(const Rect& terrainBounds);
@@ -41,6 +56,7 @@ class GameGrid {
     unsigned int getTerrainWidth() const;
     unsigned int getWindowHeight() const;
     unsigned int getWindowWidth() const;
+    void setTerrainBounds(const Rect& bounds);
     void setWindowBounds(const Rect& bounds);
     void printToFile(std::ostream& out, const bool& autOutput) const;
     void setSquare(const Point& p, const bool& alive);
