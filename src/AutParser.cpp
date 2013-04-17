@@ -1,7 +1,10 @@
 #include "AutParser.h"
 #include "AutPreprocessor.h"
 #include "GameGrid.h"
+#include <stdlib.h>
+#include <string.h>
 #include <iostream>
+#include <sstream>
 
 enum Keyword {
   KEYWORD_XRANGE,
@@ -10,31 +13,37 @@ enum Keyword {
   KEYWORD_UNKNOWN
 };
 
-size_t parseNextKeyword(const std::string& autText, size_t pos, GameGrid& grid);
+size_t parseNextKeyword(const std::string& autText, size_t pos, ParseData& pd);
 size_t getKeywordEnding(const std::string& autText, size_t pos);
 Keyword getKeywordFromString(const std::string& keywordStr);
-void handleKeywordString(const std::string& keywordStr, GameGrid& grid);
-void handleInitialBlock(const std::string& kwStr, GameGrid& grid);
-void handleXrangeArgs(const std::string& kwStr, GameGrid& grid);
-void handleYrangeArgs(const std::string& kwStr, GameGrid& grid);
+void handleKeywordString(const std::string& keywordStr, ParseData& pd);
+void handleInitialBlock(const std::string& kwStr, ParseData& pd);
+void handleXrangeArgs(const std::string& kwStr, ParseData& pd);
+void handleYrangeArgs(const std::string& kwStr, ParseData& pd);
+void printInitialStatementWarning(const std::string& kwStr, size_t startPos, size_t endPos);
+void handleInitialStatement(const std::string& statement, ParseData& pd);
+void printCouldNotFindExpected(std::string expected, std::string keyword);
+size_t handleNextXVal(const std::string& kwStr, int yVal, size_t pos, ParseData& pd);
+void getNextStatement(const std::string& wholeText, size_t pos, std::string& statement);
+bool strToIntExpectedBlock(const std::string& str, int& i, const std::string& expected, const std::string& block);
+void assignRangeArgs(const std::string& args, int& low, int& high);
 
-void AutParser::parse(const std::string& rawAutText, GameGrid& gg) {
+void AutParser::parse(const std::string& rawAutText, ParseData& pd) {
   std::string preprocessedText = AutPreprocessor::preprocess(rawAutText);
   size_t autLength = preprocessedText.length();
   size_t pos = 0;
   while(pos < autLength) {
-    pos = parseNextKeyword(preprocessedText, pos, gg);
+    pos = parseNextKeyword(preprocessedText, pos, pd);
   }
-  /* Not Implemented */
 }
 
-size_t parseNextKeyword(const std::string& autText, size_t pos, GameGrid& grid) {
+size_t parseNextKeyword(const std::string& autText, size_t pos, ParseData& pd) {
   size_t keywordEnd = getKeywordEnding(autText, pos);
   if(keywordEnd == std::string::npos) {
     return std::string::npos;
   }
   std::string keywordStr = autText.substr(pos, keywordEnd - pos);
-  handleKeywordString(keywordStr, grid);
+  handleKeywordString(keywordStr, pd);
   return keywordEnd + 1;
 }
 
@@ -45,20 +54,21 @@ size_t getKeywordEnding(const std::string& autText, size_t pos) {
     return nextSemicolonPos;
   }
   else {
-    return autText.find_first_of("}") + 1;
+    size_t nextEndBracePos = autText.find_first_of("}");
+    return autText.find_first_of(";", nextEndBracePos);
   }
 }
 
-void handleKeywordString(const std::string& keywordStr, GameGrid& grid) {
+void handleKeywordString(const std::string& keywordStr, ParseData& pd) {
   Keyword k = getKeywordFromString(keywordStr);
   if(k == KEYWORD_INITIAL) {
-    handleInitialBlock(keywordStr, grid);
+    handleInitialBlock(keywordStr, pd);
   }
   else if(k == KEYWORD_XRANGE) {
-    handleXrangeArgs(keywordStr, grid);
+    handleXrangeArgs(keywordStr, pd);
   }
   else if(k == KEYWORD_YRANGE) {
-    handleYrangeArgs(keywordStr, grid);
+    handleYrangeArgs(keywordStr, pd);
   }
   else if(k == KEYWORD_UNKNOWN) {
     std::cout << "Warning: keyword \"" << keywordStr << "\" is unknown\n";
@@ -80,14 +90,102 @@ Keyword getKeywordFromString(const std::string& keywordStr) {
   }
 }
 
-void handleInitialBlock(const std::string& kwStr, GameGrid& grid) {
-  /* NOT IMPLEMENTED */
+void handleInitialBlock(const std::string& kwStr, ParseData& pd) {
+  size_t currPos = kwStr.find_first_of("{") + 1;
+  size_t endBracketPos = kwStr.find_first_of("}");
+  std::string statementStr; 
+  while(currPos < endBracketPos) {
+    getNextStatement(kwStr, currPos, statementStr);
+    handleInitialStatement(statementStr, pd);
+    currPos += statementStr.length();
+  }
 }
 
-void handleXrangeArgs(const std::string& kwStr, GameGrid& grid) {
-  /* NOT IMPLEMENTED */
+void getNextStatement(const std::string& wholeText, size_t pos, std::string& statement) {
+  size_t semicolonPos = wholeText.find_first_of(";", pos);
+  statement = wholeText.substr(pos, semicolonPos - pos + 1);
 }
 
-void handleYrangeArgs(const std::string& kwStr, GameGrid& grid) {
-  /* NOT IMPLEMENTED */
+void handleInitialStatement(const std::string& statement, ParseData& pd) {
+  size_t equalsPos = statement.find_first_of("=");
+  if(equalsPos == std::string::npos) {
+    printCouldNotFindExpected("=", "initial");
+    return;
+  }
+  size_t colonPos = statement.find_first_of(":");
+  if(colonPos == std::string::npos) {
+    printCouldNotFindExpected(":", "initial");
+    return;
+  }
+  std::string yValStr = statement.substr(equalsPos + 1, colonPos - equalsPos - 1);
+  int yVal;
+  if(strToIntExpectedBlock(yValStr, yVal, "[valid yVal]", "initial") == false) {
+    return;
+  }
+  size_t currPos = colonPos + 1;
+  while(currPos < statement.length()) {
+    currPos = handleNextXVal(statement, yVal, currPos, pd);
+  }
+}
+
+size_t handleNextXVal(const std::string& kwStr, int yVal, size_t pos, ParseData& pd) {
+  size_t xValEnd = kwStr.find_first_of(",;", pos);
+  std::string xValStr = kwStr.substr(pos, xValEnd - pos);
+  int xVal;
+  if(strToIntExpectedBlock(xValStr, xVal, "[valid xVal]", "initial") == false) {
+    return xValEnd + 1;
+  }
+  pd.aliveCells.push_back(Point(xVal, yVal));
+  return xValEnd + 1;
+}
+
+bool strToIntExpectedBlock(const std::string& str, int& i, const std::string& expected, const std::string& block) {
+  std::istringstream ss(str);
+  ss >> i;
+  if(ss.fail()) {
+    printCouldNotFindExpected(expected, block);
+    return false;
+  }
+  return true;
+}
+
+void printCouldNotFindExpected(std::string expected, std::string keyword) {
+  std::cout << "Warning: could not find expected identifier: `" << expected << "' in keyword: `" << keyword << "'\n";
+}
+
+void printInitialStatementWarning(const std::string& kwStr, size_t startPos, size_t endPos) {
+    std::cout << "Warning: unrecognized initial statement: " 
+      << kwStr.substr(startPos, endPos - startPos + 1) << "\n";
+}
+
+void handleXrangeArgs(const std::string& kwStr, ParseData& pd) {
+  int xLow, xHigh;
+  size_t xLowPos = kwStr.find_first_of(" ") + 1;
+  assignRangeArgs(kwStr.substr(xLowPos), xLow, xHigh);
+  pd.terrain.setXLow(xLow);
+  pd.terrain.setXHigh(xHigh);
+}
+
+void handleYrangeArgs(const std::string& kwStr, ParseData& pd) {
+  int yLow, yHigh;
+  size_t yLowPos = kwStr.find_first_of(" ") + 1;
+  assignRangeArgs(kwStr.substr(yLowPos), yLow, yHigh);
+  pd.terrain.setYLow(yLow);
+  pd.terrain.setYHigh(yHigh);
+}
+
+void assignRangeArgs(const std::string& args, int& low, int& high) {
+  size_t dividerPos = args.find_first_of(" ");
+  if(dividerPos == std::string::npos) {
+    std::cout << "Warning, could not find range arg divider\n";
+    return;
+  }
+  std::string lowStr = args.substr(0, dividerPos);
+  std::string highStr = args.substr(dividerPos + 1, args.length() - dividerPos - 1);
+  if(strToIntExpectedBlock(lowStr, low, "[valid low value]", "range") == false) {
+    return;
+  }
+  if(strToIntExpectedBlock(highStr, high, "[valid high value]", "range") == false) {
+    return;
+  }
 }

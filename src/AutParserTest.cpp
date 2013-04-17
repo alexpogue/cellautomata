@@ -1,5 +1,6 @@
 #include <boost/test/unit_test.hpp>
 #include <string>
+#include <vector>
 #include "AutParser.h"
 #include "GameGrid.h"
 #include "Point.h"
@@ -25,6 +26,12 @@ void checkGridsEqual(GameGrid &expected, GameGrid &test) {
   }
 }    
 
+void aliveCellsToGrid(const std::vector<Point>& aliveCells, GameGrid& grid) {
+  for(unsigned int i = 0; i < aliveCells.size(); i++) {
+    grid.setSquare(aliveCells[i], true);
+  }
+}
+
 GameGrid getExpectedGrid() {
   Rect terrainBounds(Point(-10, -5), Point(10, 5));
   GameGrid expectedGrid(terrainBounds);
@@ -47,8 +54,10 @@ Y = 2 : -1;\n\
 Y = 1 : -2, 1;\n\
 Y = -1 : 2, 3, 4;\n\
 };\n";
-  GameGrid testGrid;
-  AutParser::parse(fileContents, testGrid);
+  ParseData pData;
+  AutParser::parse(fileContents, pData);
+  GameGrid testGrid(pData.terrain);
+  aliveCellsToGrid(pData.aliveCells, testGrid);
   checkGridsEqual(expectedGrid, testGrid);
 }
 
@@ -62,8 +71,10 @@ Y= 2 : -1;\n\
 Y =1 : -2, 1;\n\
 Y = -1:2,3, 4;\n\
 };\n";
-  GameGrid testGrid;
-  AutParser::parse(fileContents, testGrid);
+  ParseData pData;
+  AutParser::parse(fileContents, pData);
+  GameGrid testGrid(pData.terrain);
+  aliveCellsToGrid(pData.aliveCells, testGrid);
   checkGridsEqual(expectedGrid, testGrid);
 }
 
@@ -79,8 +90,42 @@ Y = 1 : -2, 1;#comment\n\
 Y = -1 : 2, 3, 4;#comment\n\
 };#comment\n\
 #comment";
-  GameGrid testGrid;
-  AutParser::parse(fileContents, testGrid);
+  ParseData pData;
+  AutParser::parse(fileContents, pData);
+  GameGrid testGrid(pData.terrain);
+  aliveCellsToGrid(pData.aliveCells, testGrid);
+  checkGridsEqual(expectedGrid, testGrid);
+}
+
+BOOST_AUTO_TEST_CASE(manyCommentsFile) {
+  GameGrid expectedGrid = getExpectedGrid();
+  std::string fileContents = "\
+#comment\n\
+Xrange#comment\n\
+-10#comment\n\
+10#comment\n\
+;#comment\n\
+Yrange#comment\n\
+-5#comment\n\
+5#comment\n\
+;#comment\n\
+Initial {#comment\n\
+Y#comment\n\
+=#comment\n\
+2#comment\n\
+:#comment\n\
+-1#comment\n\
+;#comment\n\
+Y#comment\n\
+=#comment\n\
+1 : -2, 1;#comment\n\
+Y = -1 : 2, 3, 4;#comment\n\
+};#comment\n\
+#comment";
+  ParseData pData;
+  AutParser::parse(fileContents, pData);
+  GameGrid testGrid(pData.terrain);
+  aliveCellsToGrid(pData.aliveCells, testGrid);
   checkGridsEqual(expectedGrid, testGrid);
 }
 
@@ -105,7 +150,9 @@ Y = 1 \n\
 : -2, 1;\n\
 Y = -1 : 2, 3, 4;\n\
 };\n";
-  GameGrid testGrid;
-  AutParser::parse(fileContents, testGrid);
+  ParseData pData;
+  AutParser::parse(fileContents, pData);
+  GameGrid testGrid(pData.terrain);
+  aliveCellsToGrid(pData.aliveCells, testGrid);
   checkGridsEqual(expectedGrid, testGrid);
 }
