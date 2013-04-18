@@ -36,18 +36,17 @@ void GameGrid::resetGrid() {
 void GameGrid::printToFile(std::ostream& out, 
   const bool& autOutput) const {
   if(!autOutput) {
-    for(unsigned int i = 0; i < getTerrainHeight(); i++) {
+    for(int i = windowBounds.getTopRight().getY(); i >= windowBounds.getBottomLeft().getY(); i--) {
       /* this prints the last row first (see GameGrid.h header comments) */
-      printRow(getTerrainHeight() - 1 - i, out, autOutput);
+      printRow(i, out);
       out << "\n";
     }
   }
 }
 
-void GameGrid::printRow(const int& row, std::ostream& out, 
-  const bool& autOutput) const {
-  for(unsigned int col = 0; col < getTerrainWidth(); col++) {
-    if(grid[row][col].isAlive()) {
+void GameGrid::printRow(const int& row, std::ostream& out) const {
+  for(int col = windowBounds.getBottomLeft().getX(); col < windowBounds.getTopRight().getX(); col++) {
+    if(isInBounds(Point(col, row)) && grid[row - windowBounds.getBottomLeft().getY()][col].isAlive()) {
       out << "1";
     }
     else {
@@ -173,25 +172,31 @@ void GameGrid::removeColsLeft(const unsigned int& numCols) {
 }
 
 void GameGrid::setSquare(const Point& p, const bool& alive) {
-  unsigned int normX, normY;
-  serializePoint(normX, normY, p);
-  if(normY >= getTerrainHeight() || normX >= getTerrainWidth()) {
-    std::cerr << "Tried to set out of bounds GridSquare at (" << p.getX() << ", " << p.getY() << ")\n";
+  if(!isInBounds(p)) {
+    std::cerr << "Tried to set out of bounds GridSquare at " << p << "\n";
     return;
   }
-  grid[normY][normX].setAlive(alive);
+  unsigned int serialX, serialY;
+  serializePoint(serialX, serialY, p);
+  grid[serialY][serialX].setAlive(alive);
 }
 
-void GameGrid::serializePoint(unsigned int& normX, unsigned int& normY, const Point& p) {
-  normX = p.getX() - terrainBounds.getBottomLeft().getX();
-  normY = p.getY() - terrainBounds.getBottomLeft().getY();
+bool GameGrid::isInBounds(const Point& p) const {
+  unsigned int serialX, serialY;
+  serializePoint(serialX, serialY, p);
+  return serialY >= getTerrainHeight() || serialX >= getTerrainWidth();
 }
 
-void GameGrid::normalizePoint(Point& pSerial, const unsigned int& normX, const unsigned int& normY) {
-  int serialX = normX + terrainBounds.getBottomLeft().getX();
-  int serialY = normY + terrainBounds.getBottomLeft().getY();
-  pSerial.setX(serialX);
-  pSerial.setY(serialY);
+void GameGrid::serializePoint(unsigned int& serialX, unsigned int& serialY, const Point& p) const {
+  serialX = p.getX() - terrainBounds.getBottomLeft().getX();
+  serialY = p.getY() - terrainBounds.getBottomLeft().getY();
+}
+
+void GameGrid::normalizePoint(Point& p, const unsigned int& serialX, const unsigned int& serialY) const {
+  int normX = serialX + terrainBounds.getBottomLeft().getX();
+  int normY = serialY + terrainBounds.getBottomLeft().getY();
+  p.setX(normX);
+  p.setY(normY);
 }
 
 bool GameGrid::isSquareAlive(const Point& p) const {

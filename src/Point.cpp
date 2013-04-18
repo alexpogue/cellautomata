@@ -31,3 +31,8 @@ int Point::getX() const {
 int Point::getY() const {
   return y;
 }
+
+std::ostream& operator<<(std::ostream& stream, const Point& p) { 
+  stream << "(" << p.getX() << ", " << p.getY() << ")";
+  return stream;
+}

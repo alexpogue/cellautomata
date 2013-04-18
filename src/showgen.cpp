@@ -66,30 +66,15 @@ int main(int argc, char** argv) {
     printCmdParseError(cmdStatus);
     exit(1);
   }
+  Point wbl(wxLow, wyLow);
+  Point wtr(wxHigh, wyHigh);
   Point bl(txLow, tyLow);
   Point tr(txHigh, tyHigh);
-  Rect tRange = Rect(bl, tr);
-  Rect tRangePlusTopMinusBottomPlusRight = Rect(Point(bl.getX()-1, bl.getY()-1), Point(tr.getX(), tr.getY()));
-  GameGrid gg(tRange);
-  gg.setSquare(Point(0, 9), true);
-  gg.setSquare(Point(0, 0), true);
-  gg.setSquare(Point(9, 9), true);
-  gg.setSquare(Point(9, 0), true);
-  gg.setSquare(Point(0, 1), true);
-  gg.setSquare(Point(0, 2), true);
-  gg.setSquare(Point(0, 3), true);
-  gg.setSquare(Point(0, 4), true);
-  gg.setSquare(Point(0, 5), true);
-  gg.setSquare(Point(0, 6), true);
-  gg.setSquare(Point(0, 7), true);
-  gg.setSquare(Point(0, 8), true);
-  gg.printToFile(cout, false);
-  std::cout << "\n";
-  gg.setTerrainBounds(tRangePlusTopMinusBottomPlusRight);
-  gg.printToFile(cout, false);
-  std::cout << "setting new field!\n";
-  gg.setSquare(Point(-1, -1), true);
-  gg.printToFile(cout, false);
+  GameGrid gg(Rect(bl, tr), Rect(wbl, wtr));
+  gg.setSquare(Point(0,0), true);
+  gg.setSquare(Point(0,1), true);
+  gg.setSquare(Point(1,0), true);
+  gg.printToFile(std::cout, false);
 }
 
 cmdParseStatus_t readCommandLineArgs(int argc, char** argv, bool& autOutput, 

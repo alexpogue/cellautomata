@@ -19,22 +19,6 @@ void Rect::setTopRight(Point p) {
   tRight = p;
 }
 
-void Rect::setXLow(const int& xLow) {
-  setBottomLeft(Point(xLow, getBottomLeft().getY()));
-}
-
-void Rect::setXHigh(const int& xHigh) {
-  setTopRight(Point(xHigh, getTopRight().getY()));
-}
-
-void Rect::setYLow(const int& yLow) {
-  setBottomLeft(Point(getBottomLeft().getX(), yLow));
-}
-
-void Rect::setYHigh(const int& yHigh) {
-  setTopRight(Point(getTopRight().getX(), yHigh));
-}
-
 Point Rect::getBottomLeft() const {
   return bLeft;
 }
@@ -44,9 +28,9 @@ Point Rect::getTopRight() const {
 }
 
 unsigned int Rect::getWidth() const {
-  return tRight.getX() - bLeft.getX();
+  return tRight.getX() - bLeft.getX() + 1;
 }
 
 unsigned int Rect::getHeight() const {
-  return tRight.getY() - bLeft.getY();
+  return tRight.getY() - bLeft.getY() + 1;
 }
