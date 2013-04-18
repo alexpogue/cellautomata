@@ -1,4 +1,4 @@
-all: showgen test
+all: showgen #test
 
 showgen: showgen.o GameGrid.o GridSquare.o Point.o Rect.o
 	g++ -o showgen showgen.o GameGrid.o GridSquare.o Point.o Rect.o
