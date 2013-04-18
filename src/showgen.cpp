@@ -8,8 +8,6 @@
 #include "Rect.h"
 #include "Point.h"
 
-using namespace std;
-
 typedef enum {
   CONVERSION_SUCCESS,
   CONVERSION_MEMORY,
@@ -39,7 +37,7 @@ cmdParseStatus_t readCommandLineArgs(int argc, char** argv, bool& autOutput,
   bool& dispHelp, bool& txGiven, bool& tyGiven, bool& wxGiven, bool& wyGiven, 
   bool& genGiven, int& numGenerations, int& txLow, int& txHigh, 
   int& tyLow, int& tyHigh, int& wxLow, int& wxHigh, int& wyLow, int& wyHigh, 
-  string& inputFile);
+  std::string& inputFile);
 
 /**
   Convert str to an int and put it in intConv. The resulting conversionStatus_t
@@ -53,11 +51,16 @@ conversionStatus_t strToInt(int& intConv, const char* str);
 */
 void printCmdParseError(cmdParseStatus_t parseStatus);
 
+/**
+  Prints help screen for this program.
+*/
+void printHelp(char* cmd);
+
 int main(int argc, char** argv) {
   bool autOutput, dispHelp, txGiven, tyGiven, wxGiven, wyGiven, genGiven;
   int numGenerations;
   int txLow, txHigh, tyLow, tyHigh, wxLow, wxHigh, wyLow, wyHigh;
-  string inputFile;
+  std::string inputFile;
   cmdParseStatus_t cmdStatus;
   cmdStatus = readCommandLineArgs(argc, argv, autOutput, dispHelp, txGiven, 
     tyGiven, wxGiven, wyGiven, genGiven, numGenerations, txLow, txHigh, tyLow, 
@@ -66,14 +69,30 @@ int main(int argc, char** argv) {
     printCmdParseError(cmdStatus);
     exit(1);
   }
-  Point wbl(wxLow, wyLow);
-  Point wtr(wxHigh, wyHigh);
+  if(dispHelp) {
+    printHelp(argv[0]);
+    exit(0);
+  }
+  Point wbl(txLow, tyLow);
+  Point wtr(txHigh, tyHigh);
+  if(!genGiven) {
+    numGenerations = 0;
+  }
+  if(wxGiven) {
+    wbl.setX(wxLow);
+    wtr.setX(wxHigh);
+  }
+  if(wyGiven) {
+    wbl.setY(wyLow);
+    wtr.setY(wyHigh);
+  }
   Point bl(txLow, tyLow);
   Point tr(txHigh, tyHigh);
   GameGrid gg(Rect(bl, tr), Rect(wbl, wtr));
   gg.setSquare(Point(0,0), true);
   gg.setSquare(Point(0,1), true);
   gg.setSquare(Point(1,0), true);
+  gg.setSquare(Point(-1,-1), true);
   gg.printToFile(std::cout, false);
 }
 
@@ -81,7 +100,7 @@ cmdParseStatus_t readCommandLineArgs(int argc, char** argv, bool& autOutput,
   bool& dispHelp, bool& txGiven, bool& tyGiven, bool& wxGiven, bool& wyGiven, 
   bool& genGiven, int& numGenerations, int& txLow, int& txHigh, 
   int& tyLow, int& tyHigh, int& wxLow, int& wxHigh, int& wyLow, int& wyHigh, 
-  string& inputFile) {
+  std::string& inputFile) {
   conversionStatus_t convStatus;
   autOutput = dispHelp = txGiven = tyGiven = wxGiven = wyGiven = genGiven = false;
   inputFile = "";
@@ -140,7 +159,7 @@ cmdParseStatus_t readCommandLineArgs(int argc, char** argv, bool& autOutput,
       }
     }
     else {
-      inputFile = string(argv[i]);
+      inputFile = std::string(argv[i]);
     }
   }
   return CMDPARSE_SUCCESS;
@@ -182,17 +201,32 @@ void printCmdParseError(cmdParseStatus_t parseStatus) {
     return;
   }
   else if(parseStatus == CMDPARSE_NO_FILE) {
-    cerr << "Input file not found in command line args. (-h for usage) \n";
+    std::cerr << "Input file not found in command line args. (-h for usage) \n";
   }
   else if(parseStatus == CMDPARSE_EXPECTED_VALUES) {
-    cerr << "One or more values were not provided for certain switches (ex. "; 
-    cerr << "-tx expects xLow\n"; 
-    cerr << "and xHigh, but only xLow was given)\n";
+    std::cerr << "One or more values were not provided for certain switches (ex. "; 
+    std::cerr << "-tx expects xLow\n"; 
+    std::cerr << "and xHigh, but only xLow was given)\n";
   }
   else if(parseStatus == CMDPARSE_BAD_VALUES) {
-    cerr << "One or more values could not be converted to integers\n";
+    std::cerr << "One or more values could not be converted to integers\n";
   }
   else if(parseStatus == CMDPARSE_MEMORY) {
-    cerr << "Memory allocation failed\n";
+    std::cerr << "Memory allocation failed\n";
   }
+}
+
+void printHelp(char* cmd) {
+  std::cout << "\nShowgen reads an aut file, simulates a given number of ";
+  std::cout << "generations (defaults to 0),\nand prints the result\n\n";
+  std::cout << "Usage: " << cmd << " [options] file.aut\n";
+  std::cout << "\n";
+  std::cout << "Options:\n";
+  std::cout << "-a\t\toutput as aut file (otherwise ASCII display)\n";
+  std::cout << "-g n\t\tsimulate n generations\n";
+  std::cout << "-tx l,h\t\tset x range of terrain (overrides aut bounds)\n";
+  std::cout << "-ty l,h\t\tset y range of terrain (overrides aut bounds)\n";
+  std::cout << "-wx l,h\t\tset x range for output window (defaults to terrain x bounds)\n";
+  std::cout << "-wy l,h\t\tset y range for output window (defaults to terrain y bounds\n";
+  std::cout << "\n";
 }

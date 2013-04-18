@@ -45,8 +45,10 @@ void GameGrid::printToFile(std::ostream& out,
 }
 
 void GameGrid::printRow(const int& row, std::ostream& out) const {
-  for(int col = windowBounds.getBottomLeft().getX(); col < windowBounds.getTopRight().getX(); col++) {
-    if(isInBounds(Point(col, row)) && grid[row - windowBounds.getBottomLeft().getY()][col].isAlive()) {
+  for(int col = windowBounds.getBottomLeft().getX(); col <= windowBounds.getTopRight().getX(); col++) {
+    unsigned int serialRow, serialCol;
+    serializePoint(serialCol, serialRow, Point(col, row));
+    if(isInBounds(Point(col, row)) && grid[serialRow][serialCol].isAlive()) {
       out << "1";
     }
     else {
@@ -182,9 +184,8 @@ void GameGrid::setSquare(const Point& p, const bool& alive) {
 }
 
 bool GameGrid::isInBounds(const Point& p) const {
-  unsigned int serialX, serialY;
-  serializePoint(serialX, serialY, p);
-  return serialY >= getTerrainHeight() || serialX >= getTerrainWidth();
+  return p.getX() >= terrainBounds.getBottomLeft().getX() && p.getX() <= terrainBounds.getTopRight().getX()
+    && p.getY() >= terrainBounds.getBottomLeft().getY() && p.getY() <= terrainBounds.getTopRight().getY(); 
 }
 
 void GameGrid::serializePoint(unsigned int& serialX, unsigned int& serialY, const Point& p) const {
