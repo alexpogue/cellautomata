@@ -69,7 +69,7 @@ int main(int argc, char** argv) {
   Point bl(txLow, tyLow);
   Point tr(txHigh, tyHigh);
   Rect tRange = Rect(bl, tr);
-  Rect tRangePlusTopMinusBottomPlusRight = Rect(Point(bl.getX(), bl.getY() + 1), Point(tr.getX(), tr.getY()));
+  Rect tRangePlusTopMinusBottomPlusRight = Rect(Point(bl.getX()-1, bl.getY()-1), Point(tr.getX(), tr.getY()));
   GameGrid gg(tRange);
   gg.setSquare(Point(0, 9), true);
   gg.setSquare(Point(0, 0), true);
@@ -86,6 +86,9 @@ int main(int argc, char** argv) {
   gg.printToFile(cout, false);
   std::cout << "\n";
   gg.setTerrainBounds(tRangePlusTopMinusBottomPlusRight);
+  gg.printToFile(cout, false);
+  std::cout << "setting new field!\n";
+  gg.setSquare(Point(-1, -1), true);
   gg.printToFile(cout, false);
 }
 
