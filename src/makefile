@@ -1,9 +1,9 @@
 all: showgen #test
 
-showgen: showgen.o GameGrid.o GridSquare.o Point.o Rect.o
-	g++ -o showgen showgen.o GameGrid.o GridSquare.o Point.o Rect.o
+showgen: showgen.o GameGrid.o GridSquare.o Point.o Rect.o AutParser.o AutPreprocessor.o
+	g++ -o showgen showgen.o GameGrid.o GridSquare.o Point.o Rect.o AutParser.o AutPreprocessor.o
 
-showgen.o: showgen.cpp GameGrid.h Rect.h Point.h
+showgen.o: showgen.cpp GameGrid.h Rect.h Point.h AutParser.h
 	g++ -g -Wall -pedantic -c showgen.cpp
 
 GameGrid.o: GameGrid.cpp GameGrid.h GridSquare.h Point.h Rect.h
