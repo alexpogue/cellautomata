@@ -73,6 +73,14 @@ unsigned int GameGrid::getWindowWidth() const {
   return windowBounds.getWidth();
 }
 
+Rect GameGrid::getTerrainBounds() const {
+  return terrainBounds;
+}
+
+Rect GameGrid::getWindowBounds() const {
+  return windowBounds;
+}
+
 void GameGrid::setWindowBounds(const Rect& bounds) {
   windowBounds = bounds;
 }
@@ -82,7 +90,6 @@ void GameGrid::setTerrainBounds(const Rect& bounds) {
   int deltaRowsBottom = terrainBounds.getBottomLeft().getY() - bounds.getBottomLeft().getY();
   int deltaColsLeft = terrainBounds.getBottomLeft().getX() - bounds.getBottomLeft().getX();
   int deltaColsRight = bounds.getTopRight().getX() - terrainBounds.getTopRight().getX();
-  
   changeRowsTop(deltaRowsTop);
   changeRowsBottom(deltaRowsBottom);
   changeColsRight(deltaColsRight);

@@ -57,6 +57,8 @@ class GameGrid {
     unsigned int getTerrainWidth() const;
     unsigned int getWindowHeight() const;
     unsigned int getWindowWidth() const;
+    Rect getTerrainBounds() const;
+    Rect getWindowBounds() const;
     void setTerrainBounds(const Rect& bounds);
     void setWindowBounds(const Rect& bounds);
     void printToFile(std::ostream& out, const bool& autOutput) const;
