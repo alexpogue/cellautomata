@@ -5,7 +5,7 @@
 
 class AutParser {
   public: 
-    static void parse(const std::string& rawAutText, GameGrid& gg);
+    static void parse(const std::string& fileName, GameGrid& gg);
 };
 
 #endif

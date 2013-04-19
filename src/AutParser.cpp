@@ -4,6 +4,7 @@
 #include <string.h>
 #include <iostream>
 #include <sstream>
+#include <fstream>
 
 struct ParseData {
   std::vector<Point> aliveCells;
@@ -32,7 +33,17 @@ void getNextStatement(const std::string& wholeText, size_t pos, std::string& sta
 bool strToIntExpectedBlock(const std::string& str, int& i, const std::string& expected, const std::string& block);
 void assignRangeArgs(const std::string& args, int& low, int& high);
 
-void AutParser::parse(const std::string& rawAutText, GameGrid& gg) {
+void AutParser::parse(const std::string& fileName, GameGrid& gg) {
+  std::ifstream file;
+  file.exceptions(std::ios::failbit);
+  try {
+    file.open(fileName.c_str());
+  } catch(std::ifstream::failure e) {
+    throw;
+  }
+  std::stringstream ss;
+  ss << file.rdbuf();
+  std::string rawAutText(ss.str());
   std::string preprocessedText = AutPreprocessor::preprocess(rawAutText);
   ParseData pd;
   size_t autLength = preprocessedText.length();

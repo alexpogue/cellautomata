@@ -4,6 +4,8 @@
 #include <cstring>
 #include <climits>
 #include <cerrno>
+#include <fstream>
+#include <stdlib.h>
 #include "GameGrid.h"
 #include "Rect.h"
 #include "Point.h"
@@ -83,16 +85,13 @@ int main(int argc, char** argv) {
   Point bl;
   Point tr;
 
-  std::string fileContents = "\
-Xrange -10 10;\n\
-Yrange -5 5;\n\
-Initial {\n\
-Y = 0 : 2;\n\
-Y = 1 : 0, 2;\n\
-Y = 2 : 1,2;\n\
-};\n";
   GameGrid gg;
-  AutParser::parse(fileContents, gg);
+  try {
+    AutParser::parse(inputFile, gg);
+  } catch(std::ifstream::failure e) {
+    std::cerr << "Could not open file\n";
+    exit(1);
+  }
   bl.setX(gg.getTerrainBounds().getBottomLeft().getX());
   bl.setY(gg.getTerrainBounds().getBottomLeft().getY());
   tr.setX(gg.getTerrainBounds().getTopRight().getX());
