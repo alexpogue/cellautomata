@@ -3,14 +3,9 @@
 
 #include "GameGrid.h"
 
-struct ParseData {
-  std::vector<Point> aliveCells;
-  Rect terrain;
-};
-
 class AutParser {
   public: 
-    static void parse(const std::string& rawAutText, ParseData& pd);    
+    static void parse(const std::string& rawAutText, GameGrid& gg);
 };
 
 #endif

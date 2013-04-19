@@ -1,10 +1,14 @@
 #include "AutParser.h"
 #include "AutPreprocessor.h"
-#include "GameGrid.h"
 #include <stdlib.h>
 #include <string.h>
 #include <iostream>
 #include <sstream>
+
+struct ParseData {
+  std::vector<Point> aliveCells;
+  Rect terrain;
+};
 
 enum Keyword {
   KEYWORD_XRANGE,
@@ -28,12 +32,19 @@ void getNextStatement(const std::string& wholeText, size_t pos, std::string& sta
 bool strToIntExpectedBlock(const std::string& str, int& i, const std::string& expected, const std::string& block);
 void assignRangeArgs(const std::string& args, int& low, int& high);
 
-void AutParser::parse(const std::string& rawAutText, ParseData& pd) {
+void AutParser::parse(const std::string& rawAutText, GameGrid& gg) {
   std::string preprocessedText = AutPreprocessor::preprocess(rawAutText);
+  ParseData pd;
   size_t autLength = preprocessedText.length();
   size_t pos = 0;
   while(pos < autLength) {
     pos = parseNextKeyword(preprocessedText, pos, pd);
+  }
+  gg.setTerrainBounds(pd.terrain);
+  gg.setWindowBounds(pd.terrain);
+  gg.resetGrid();
+  for(unsigned int i = 0; i < pd.aliveCells.size(); i++) {
+    gg.setSquare(pd.aliveCells[i], true);
   }
 }
 
