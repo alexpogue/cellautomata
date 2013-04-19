@@ -8,6 +8,7 @@
 #include "Rect.h"
 #include "Point.h"
 #include "AutParser.h"
+#include "GolSimulator.h"
 
 typedef enum {
   CONVERSION_SUCCESS,
@@ -86,9 +87,9 @@ int main(int argc, char** argv) {
 Xrange -10 10;\n\
 Yrange -5 5;\n\
 Initial {\n\
-Y = 2 : -1;\n\
-Y = 1 : -2, 1;\n\
-Y = -1 : 2, 3, 4;\n\
+Y = 0 : 2;\n\
+Y = 1 : 0, 2;\n\
+Y = 2 : 1,2;\n\
 };\n";
   GameGrid gg;
   AutParser::parse(fileContents, gg);
@@ -120,7 +121,9 @@ Y = -1 : 2, 3, 4;\n\
     wtr.setY(wyHigh);
   }
   gg.setWindowBounds(Rect(wbl, wtr));
-  gg.printToFile(std::cout, false);
+  GameGrid newGrid(gg);
+  newGrid = GolSimulator::simulate(gg, numGenerations);
+  newGrid.printToFile(std::cout, false);
 }
 
 cmdParseStatus_t readCommandLineArgs(int argc, char** argv, bool& autOutput, 

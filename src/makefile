@@ -1,7 +1,7 @@
 all: showgen #test
 
-showgen: showgen.o GameGrid.o GridSquare.o Point.o Rect.o AutParser.o AutPreprocessor.o
-	g++ -o showgen showgen.o GameGrid.o GridSquare.o Point.o Rect.o AutParser.o AutPreprocessor.o
+showgen: showgen.o GameGrid.o GridSquare.o Point.o Rect.o AutParser.o AutPreprocessor.o GolSimulator.o
+	g++ -o showgen showgen.o GameGrid.o GridSquare.o Point.o Rect.o AutParser.o AutPreprocessor.o GolSimulator.o
 
 showgen.o: showgen.cpp GameGrid.h Rect.h Point.h AutParser.h
 	g++ -g -Wall -pedantic -c showgen.cpp
@@ -20,6 +20,9 @@ Rect.o: Rect.cpp Rect.h Point.h
 
 AutPreprocessor.o: AutPreprocessor.cpp AutPreprocessor.h
 	g++ -g -Wall -pedantic -c AutPreprocessor.cpp
+
+GolSimulator.o: GolSimulator.cpp GolSimulator.h GameGrid.h
+	g++ -g -Wall -pedantic -c GolSimulator.cpp
 
 test: TestMain.o AutPreprocessorTest.o AutPreprocessor.o AutParserTest.o AutParser.o Rect.o Point.o GameGrid.o GridSquare.o
 	g++ -o test TestMain.o AutPreprocessorTest.o AutPreprocessor.o AutParserTest.o AutParser.o Rect.o Point.o GameGrid.o GridSquare.o -lboost_unit_test_framework
