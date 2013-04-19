@@ -32,7 +32,6 @@ class GameGrid {
     Rect windowBounds;
     void printRow(const int& row, std::ostream& outStream) const;
     void initialize(const Rect& terrainBounds, const Rect& windowBounds);
-    bool isInBounds(const Point& p) const;
     void serializePoint(unsigned int& serialX, unsigned int& serialY, const Point& p) const;
     void normalizePoint(Point& pSerial, const unsigned int& normX, const unsigned int& normY) const;
     void changeRowsTop(const int& delta);
@@ -64,6 +63,7 @@ class GameGrid {
     void printToFile(std::ostream& out, const bool& autOutput) const;
     void setSquare(const Point& p, const bool& alive);
     bool isSquareAlive(const Point& p) const;
+    bool isInBounds(const Point& p) const;
 };
 
 #endif

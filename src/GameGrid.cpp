@@ -208,5 +208,7 @@ void GameGrid::normalizePoint(Point& p, const unsigned int& serialX, const unsig
 }
 
 bool GameGrid::isSquareAlive(const Point& p) const {
-  return grid[p.getY()][p.getX()].isAlive();
+  unsigned int serialX, serialY;
+  serializePoint(serialX, serialY, p);
+  return grid[serialY][serialX].isAlive();
 }

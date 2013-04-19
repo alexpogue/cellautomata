@@ -14,8 +14,8 @@ void checkGridsEqual(GameGrid &expected, GameGrid &test) {
   BOOST_CHECK_EQUAL(expected.getWindowWidth(), test.getWindowWidth());
   if(expected.getTerrainHeight() == test.getTerrainHeight()
       && expected.getTerrainWidth() == test.getTerrainWidth()) {
-    for(unsigned int i = 0; i < expected.getTerrainHeight(); i++) {
-      for(unsigned int j = 0; j < expected.getTerrainWidth(); j++) {
+    for(unsigned int i = expected.getTerrainBounds().getBottomLeft().getY(); i <= expected.getTerrainBounds().getTopRight().getY(); i++) {
+      for(unsigned int j = expected.getTerrainBounds().getBottomLeft().getX(); j < expected.getTerrainBounds().getTopRight().getX(); j++) {
         Point p(j, i);
         BOOST_CHECK_EQUAL(expected.isSquareAlive(p), test.isSquareAlive(p));
       }
