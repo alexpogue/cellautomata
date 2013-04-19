@@ -7,6 +7,7 @@
 #include "GameGrid.h"
 #include "Rect.h"
 #include "Point.h"
+#include "AutParser.h"
 
 typedef enum {
   CONVERSION_SUCCESS,
@@ -78,6 +79,38 @@ int main(int argc, char** argv) {
   if(!genGiven) {
     numGenerations = 0;
   }
+  Point bl;
+  Point tr;
+
+  std::string fileContents = "\
+Xrange -10 10;\n\
+Yrange -5 5;\n\
+Initial {\n\
+Y = 2 : -1;\n\
+Y = 1 : -2, 1;\n\
+Y = -1 : 2, 3, 4;\n\
+};\n";
+  GameGrid gg;
+  AutParser::parse(fileContents, gg);
+  bl.setX(gg.getTerrainBounds().getBottomLeft().getX());
+  bl.setY(gg.getTerrainBounds().getBottomLeft().getY());
+  tr.setX(gg.getTerrainBounds().getTopRight().getX());
+  tr.setY(gg.getTerrainBounds().getTopRight().getY());
+  if(txGiven) {
+    bl.setX(txLow);
+    tr.setX(txHigh);
+  }
+  if(tyGiven) {
+    bl.setY(tyLow);
+    tr.setY(tyHigh);
+  }
+
+  gg.setTerrainBounds(Rect(bl, tr));
+
+  wbl.setX(gg.getTerrainBounds().getBottomLeft().getX());
+  wbl.setY(gg.getTerrainBounds().getBottomLeft().getY());
+  wtr.setX(gg.getTerrainBounds().getTopRight().getX());
+  wtr.setY(gg.getTerrainBounds().getTopRight().getY());
   if(wxGiven) {
     wbl.setX(wxLow);
     wtr.setX(wxHigh);
@@ -86,13 +119,7 @@ int main(int argc, char** argv) {
     wbl.setY(wyLow);
     wtr.setY(wyHigh);
   }
-  Point bl(txLow, tyLow);
-  Point tr(txHigh, tyHigh);
-  GameGrid gg(Rect(bl, tr), Rect(wbl, wtr));
-  gg.setSquare(Point(0,0), true);
-  gg.setSquare(Point(0,1), true);
-  gg.setSquare(Point(1,0), true);
-  gg.setSquare(Point(-1,-1), true);
+  gg.setWindowBounds(Rect(wbl, wtr));
   gg.printToFile(std::cout, false);
 }
 
