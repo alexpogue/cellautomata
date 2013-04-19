@@ -1,9 +1,11 @@
 #ifndef GOL_SIMULATOR_H
 #define GOL_SIMULATOR_H
 
+#include "GameGrid.h"
+
 class GolSimulator {
   public:
-    static void simulate(GameGrid& gg, const unsigned int& numGenerations);
+    static GameGrid simulate(const GameGrid& gg, const unsigned int& numGenerations);
 };
 
 #endif
