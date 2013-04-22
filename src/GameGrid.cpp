@@ -1,6 +1,7 @@
 #include "GameGrid.h"
 /* TODO: REMOVE. FOR TEST ERROR MESSAGES */
 #include <iostream>
+#include "AutWriter.h"
 
 GameGrid::GameGrid() {
   initialize(Rect(), Rect());
@@ -35,7 +36,10 @@ void GameGrid::resetGrid() {
 
 void GameGrid::printToFile(std::ostream& out, 
   const bool& autOutput) const {
-  if(!autOutput) {
+  if(autOutput) {
+    AutWriter::write(*this, out);
+  }
+  else {
     for(int i = windowBounds.getTopRight().getY(); i >= windowBounds.getBottomLeft().getY(); i--) {
       /* this prints the last row first (see GameGrid.h header comments) */
       printRow(i, out);

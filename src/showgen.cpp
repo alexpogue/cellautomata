@@ -17,7 +17,8 @@ typedef enum {
   CONVERSION_MEMORY,
   CONVERSION_OVERFLOW,
   CONVERSION_UNDERFLOW,
-  CONVERSION_INVALID
+  CONVERSION_INVALID,
+  CONVERSION_NOT_ENOUGH_INTS
 } conversionStatus_t;
 
 typedef enum {
@@ -122,7 +123,7 @@ int main(int argc, char** argv) {
   gg.setWindowBounds(Rect(wbl, wtr));
   GameGrid newGrid(gg);
   newGrid = GolSimulator::simulate(gg, numGenerations);
-  newGrid.printToFile(std::cout, false);
+  newGrid.printToFile(std::cout, autOutput);
 }
 
 cmdParseStatus_t readCommandLineArgs(int argc, char** argv, bool& autOutput, 
@@ -203,6 +204,9 @@ conversionStatus_t handleSwitchIntInt(char* str, int& i1, int&i2) {
     return convStat;
   }
   iStr = strtok(NULL, "");
+  if(iStr == NULL) {
+    return CONVERSION_NOT_ENOUGH_INTS;
+  }
   convStat = strToInt(i2, iStr);
   return convStat;
 } 

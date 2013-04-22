@@ -6,7 +6,7 @@ showgen: showgen.o GameGrid.o GridSquare.o Point.o Rect.o AutParser.o AutPreproc
 showgen.o: showgen.cpp GameGrid.h Rect.h Point.h AutParser.h
 	g++ -g -Wall -pedantic -c showgen.cpp
 
-GameGrid.o: GameGrid.cpp GameGrid.h GridSquare.h Point.h Rect.h
+GameGrid.o: GameGrid.cpp GameGrid.h GridSquare.h Point.h Rect.h AutWriter.h
 	g++ -g -Wall -pedantic -c GameGrid.cpp
 
 GridSquare.o: GridSquare.cpp GridSquare.h Point.h
