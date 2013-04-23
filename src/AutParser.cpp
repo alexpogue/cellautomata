@@ -9,6 +9,10 @@
 struct ParseData {
   std::vector<Point> aliveCells;
   Rect terrain;
+  std::string name;
+  std::string chars;
+  std::string rules;
+  std::vector<std::vector<char> > colors;
 };
 
 enum Keyword {

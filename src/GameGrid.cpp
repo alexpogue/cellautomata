@@ -4,20 +4,29 @@
 #include "AutWriter.h"
 
 GameGrid::GameGrid() {
-  initialize(Rect(), Rect());
+  initialize(Rect(), Rect(), std::vector<CellState>());
 }
 
 GameGrid::GameGrid(const Rect& terrain) {
-  initialize(terrain, terrain);
+  initialize(terrain, terrain, std::vector<CellState>());
 }
 
 GameGrid::GameGrid(const Rect& terrain, const Rect& window) { 
-  initialize(terrain, window); 
+  initialize(terrain, window, std::vector<CellState>()); 
 }
 
-void GameGrid::initialize(const Rect& terrain, const Rect& window) {
+GameGrid::GameGrid(const Rect& terrain, const std::vector<CellState>& states) {
+  initialize(terrain, terrain, states);
+}
+
+GameGrid::GameGrid(const Rect& terrain, const Rect& window, const std::vector<CellState>& states) {
+  initialize(terrain, window, states);
+}
+
+void GameGrid::initialize(const Rect& terrain, const Rect& window, const std::vector<CellState>& states) {
   terrainBounds = Rect(terrain);
   windowBounds = Rect(window);
+  gameStates = std::vector<CellState>(states);
   resetGrid();
 }
 
@@ -52,12 +61,7 @@ void GameGrid::printRow(const int& row, std::ostream& out) const {
   for(int col = windowBounds.getBottomLeft().getX(); col <= windowBounds.getTopRight().getX(); col++) {
     unsigned int serialRow, serialCol;
     serializePoint(serialCol, serialRow, Point(col, row));
-    if(isInBounds(Point(col, row)) && grid[serialRow][serialCol].isAlive()) {
-      out << "1";
-    }
-    else {
-      out << "~";
-    }
+    out << grid[serialRow][serialCol].getState().getChar();
   }
 }
 
@@ -191,7 +195,12 @@ void GameGrid::setSquare(const Point& p, const bool& alive) {
   }
   unsigned int serialX, serialY;
   serializePoint(serialX, serialY, p);
-  grid[serialY][serialX].setAlive(alive);
+  if(alive) {
+    grid[serialY][serialX].setState(gameStates[1]);
+  }
+  else {
+    grid[serialY][serialX].setState(gameStates[0]);
+  }
 }
 
 bool GameGrid::isInBounds(const Point& p) const {
@@ -211,8 +220,12 @@ void GameGrid::normalizePoint(Point& p, const unsigned int& serialX, const unsig
   p.setY(normY);
 }
 
-bool GameGrid::isSquareAlive(const Point& p) const {
+CellState GameGrid::getSquareState(const Point& p) const {
   unsigned int serialX, serialY;
   serializePoint(serialX, serialY, p);
-  return grid[serialY][serialX].isAlive();
+  return grid[serialY][serialX].getState();
+}
+
+void GameGrid::setGameStates(const std::vector<CellState>& states) {
+  gameStates = std::vector<CellState>(states);
 }

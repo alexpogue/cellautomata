@@ -2,14 +2,15 @@
 #define GRID_SQUARE_H
 
 #include "Point.h"
+#include "CellState.h"
 
 class GridSquare {
   private:
-    bool alive;
+    CellState state;
   public:
     GridSquare();
-    void setAlive(const bool& isAlive);
-    bool isAlive() const;
+    void setState(const CellState& state);
+    CellState getState() const;
 };
 
 #endif

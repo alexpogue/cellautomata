@@ -19,7 +19,7 @@ GameGrid simulateGeneration(const GameGrid& gg) {
     for(int j = dest.getTerrainBounds().getBottomLeft().getX(); j <= dest.getTerrainBounds().getTopRight().getX(); j++) {
       Point p = Point(j, i);
       char numAlive = getNumAliveNeighbors(gg, p);
-      if(gg.isSquareAlive(p)) {
+      if(gg.getSquareState(p).getNum() == 1) {
         if(numAlive == 2 || numAlive == 3) {
           dest.setSquare(p, true);
         }
@@ -42,7 +42,7 @@ char getNumAliveNeighbors(const GameGrid& grid, Point loc) {
   for(int i = loc.getY() - 1; i <= loc.getY() + 1; i++) {
     for(int j = loc.getX() - 1; j <= loc.getX() + 1; j++) {
       Point check(j, i);
-      if(grid.isInBounds(check) && grid.isSquareAlive(check)) {
+      if(grid.isInBounds(check) && grid.getSquareState(check).getNum() == 1) {
         ++num;
       }
       else if(!grid.isInBounds(check)) {
@@ -51,7 +51,7 @@ char getNumAliveNeighbors(const GameGrid& grid, Point loc) {
       }
     }
   }
-  if(grid.isSquareAlive(loc)) {
+  if(grid.getSquareState(loc).getNum() == 1) {
     --num;
   }
   return num;

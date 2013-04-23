@@ -1,14 +1,14 @@
 #include "GridSquare.h"
 #include <iostream>
+#include "CellState.h"
 
-GridSquare::GridSquare() {
-  alive = false;
+GridSquare::GridSquare() : state(0, '~', StateColor()) {
 }
 
-void GridSquare::setAlive(const bool& isAlive) {
-  alive = isAlive;
+void GridSquare::setState(const CellState& newState) {
+  state = CellState(newState);
 }
 
-bool GridSquare::isAlive() const {
-  return alive;
+CellState GridSquare::getState() const {
+  return state;
 }
