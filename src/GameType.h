@@ -1,0 +1,9 @@
+#ifndef GAME_TYPE_H
+#define GAME_TYPE_H
+
+enum GameType {
+  GAME_CONWAYS_LIFE;
+  GAME_BRIANS_BRAIN;
+  GAME_WIRE_WORLD;
+  GAME_LANGTONS_ANT;
+}
