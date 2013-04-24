@@ -59,9 +59,14 @@ void GameGrid::printToFile(std::ostream& out,
 
 void GameGrid::printRow(const int& row, std::ostream& out) const {
   for(int col = windowBounds.getBottomLeft().getX(); col <= windowBounds.getTopRight().getX(); col++) {
-    unsigned int serialRow, serialCol;
-    serializePoint(serialCol, serialRow, Point(col, row));
-    out << grid[serialRow][serialCol].getState().getChar();
+    if(isInBounds(Point(col, row))) {
+      unsigned int serialRow, serialCol;
+      serializePoint(serialCol, serialRow, Point(col, row));
+      out << grid[serialRow][serialCol].getState().getChar();
+    }
+    else {
+      out << "~";
+    }
   }
 }
 
