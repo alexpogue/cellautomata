@@ -3,13 +3,13 @@ all: showgen sim-tui #test
 showgen: showgen.o GameGrid.o GridSquare.o Point.o Rect.o AutParser.o AutPreprocessor.o GolSimulator.o AutWriter.o CellState.o
 	g++ -o showgen showgen.o GameGrid.o GridSquare.o Point.o Rect.o AutParser.o AutPreprocessor.o GolSimulator.o AutWriter.o CellState.o
 
-sim-tui: sim-tui.o
-	g++ -lncurses -o sim-tui sim-tui.o
+sim-tui: sim-tui.o GameGrid.o Point.o GridSquare.o CellState.o Rect.o AutWriter.o AutParser.o AutPreprocessor.o
+	g++ -o sim-tui sim-tui.o GameGrid.o Point.o GridSquare.o CellState.o Rect.o AutWriter.o AutParser.o AutPreprocessor.o -lncurses 
 
 showgen.o: showgen.cpp GameGrid.h Rect.h Point.h AutParser.h
 	g++ -g -Wall -pedantic -c showgen.cpp
 
-sim-tui.o: sim-tui.cpp
+sim-tui.o: sim-tui.cpp GameGrid.h
 	g++ -g -Wall -pedantic -c sim-tui.cpp
 
 GameGrid.o: GameGrid.cpp GameGrid.h GridSquare.h Point.h Rect.h AutWriter.h
