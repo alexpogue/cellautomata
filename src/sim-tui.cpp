@@ -26,7 +26,7 @@ int main(int argc, char** argv) {
     readCommandLineArgs(argc, argv, txLow, txHigh, tyLow, tyHigh, autFilename, dispHelp);
   }
   catch(std::runtime_error e) {
-    std::cout << e.what() << "\n";
+    std::cerr << e.what() << "\n";
     exit(1);
   }
   if(dispHelp) {
@@ -42,13 +42,19 @@ int main(int argc, char** argv) {
     AutParser::parse(autFilename, gg);
   }
   catch(std::ifstream::failure e) {
-    std::cout << "Could not open file: " << autFilename << "\n";
+    std::cerr << "Could not open file: " << autFilename << "\n";
     exit(1);
   }
   /* TODO: replace hardcoded values with variables according to actual screen size */
   gg.setWindowBounds(Rect(Point(-19,-7),Point(19,8)));
   TuiDisplay td(gg);
-  td.open();
+  try {
+    td.open();
+  }
+  catch(std::runtime_error e) {
+    std::cerr << e.what() << "\n";
+    exit(1);
+  }
   td.update();
   td.close();
   //gg.printToFile(std::cout, false);
