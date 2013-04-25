@@ -49,7 +49,7 @@ void GameGrid::printToFile(std::ostream& out,
     AutWriter::write(*this, out);
   }
   else {
-    for(int i = windowBounds.getTopRight().getY(); i >= windowBounds.getBottomLeft().getY(); i--) {
+    for(int i = getWindowBounds().getTopRight().getY(); i >= getWindowBounds().getBottomLeft().getY(); i--) {
       /* this prints the last row first (see GameGrid.h header comments) */
       printRow(i, out);
       out << "\n";
@@ -59,7 +59,7 @@ void GameGrid::printToFile(std::ostream& out,
 
 std::string GameGrid::getAsciiString() {
   std::string ret;
-  for(int i = windowBounds.getTopRight().getY(); i >= windowBounds.getBottomLeft().getY(); i--) {
+  for(int i = getWindowBounds().getTopRight().getY(); i >= getWindowBounds().getBottomLeft().getY(); i--) {
     /* this prints the last row first (see GameGrid.h header comments) */
     ret += getRowAsciiString(i);
     ret += "\n";
@@ -69,7 +69,7 @@ std::string GameGrid::getAsciiString() {
 
 std::string GameGrid::getRowAsciiString(int row) {
   std::string ret;
-  for(int col = windowBounds.getBottomLeft().getX(); col <= windowBounds.getTopRight().getX(); col++) {
+  for(int col = getWindowBounds().getBottomLeft().getX(); col <= getWindowBounds().getTopRight().getX(); col++) {
     if(isInBounds(Point(col, row))) {
       unsigned int serialRow, serialCol;
       serializePoint(serialCol, serialRow, Point(col, row));
@@ -84,7 +84,7 @@ std::string GameGrid::getRowAsciiString(int row) {
 
 
 void GameGrid::printRow(const int& row, std::ostream& out) const {
-  for(int col = windowBounds.getBottomLeft().getX(); col <= windowBounds.getTopRight().getX(); col++) {
+  for(int col = getWindowBounds().getBottomLeft().getX(); col <= getWindowBounds().getTopRight().getX(); col++) {
     if(isInBounds(Point(col, row))) {
       unsigned int serialRow, serialCol;
       serializePoint(serialCol, serialRow, Point(col, row));
@@ -97,19 +97,19 @@ void GameGrid::printRow(const int& row, std::ostream& out) const {
 }
 
 unsigned int GameGrid::getTerrainWidth() const {
-  return terrainBounds.getWidth();
+  return getTerrainBounds().getWidth();
 }
 
 unsigned int GameGrid::getTerrainHeight() const {
-  return terrainBounds.getHeight();
+  return getTerrainBounds().getHeight();
 }
 
 unsigned int GameGrid::getWindowHeight() const {
-  return windowBounds.getHeight();
+  return getWindowBounds().getHeight();
 }
 
 unsigned int GameGrid::getWindowWidth() const {
-  return windowBounds.getWidth();
+  return getWindowBounds().getWidth();
 }
 
 Rect GameGrid::getTerrainBounds() const {
@@ -125,10 +125,10 @@ void GameGrid::setWindowBounds(const Rect& bounds) {
 }
 
 void GameGrid::setTerrainBounds(const Rect& bounds) {
-  int deltaRowsTop = bounds.getTopRight().getY() - terrainBounds.getTopRight().getY();
-  int deltaRowsBottom = terrainBounds.getBottomLeft().getY() - bounds.getBottomLeft().getY();
-  int deltaColsLeft = terrainBounds.getBottomLeft().getX() - bounds.getBottomLeft().getX();
-  int deltaColsRight = bounds.getTopRight().getX() - terrainBounds.getTopRight().getX();
+  int deltaRowsTop = bounds.getTopRight().getY() - getTerrainBounds().getTopRight().getY();
+  int deltaRowsBottom = getTerrainBounds().getBottomLeft().getY() - bounds.getBottomLeft().getY();
+  int deltaColsLeft = getTerrainBounds().getBottomLeft().getX() - bounds.getBottomLeft().getX();
+  int deltaColsRight = bounds.getTopRight().getX() - getTerrainBounds().getTopRight().getX();
   changeRowsTop(deltaRowsTop);
   changeRowsBottom(deltaRowsBottom);
   changeColsRight(deltaColsRight);
@@ -173,50 +173,50 @@ void GameGrid::changeColsLeft(const int& delta) {
 
 void GameGrid::addRowsTop(const unsigned int& numRows) {
   grid.insert(grid.end(), numRows, std::vector<GridSquare>(getTerrainWidth()));
-  terrainBounds.setTopRight(Point(terrainBounds.getTopRight().getX(), terrainBounds.getTopRight().getY() + numRows));
+  terrainBounds.setTopRight(Point(getTerrainBounds().getTopRight().getX(), getTerrainBounds().getTopRight().getY() + numRows));
 }
 
 void GameGrid::addRowsBottom(const unsigned int& numRows) {
   grid.insert(grid.begin(), numRows, std::vector<GridSquare>(getTerrainWidth()));
-  terrainBounds.setBottomLeft(Point(terrainBounds.getBottomLeft().getX(), terrainBounds.getBottomLeft().getY() - numRows));
+  terrainBounds.setBottomLeft(Point(getTerrainBounds().getBottomLeft().getX(), getTerrainBounds().getBottomLeft().getY() - numRows));
 }
 
 void GameGrid::addColsRight(const unsigned int& numCols) {
   for(unsigned int i = 0; i < getTerrainHeight(); i++) {
     grid[i].insert(grid[i].end(), numCols, GridSquare());
   }
-  terrainBounds.setTopRight(Point(terrainBounds.getTopRight().getX() + numCols, terrainBounds.getTopRight().getY()));
+  terrainBounds.setTopRight(Point(getTerrainBounds().getTopRight().getX() + numCols, getTerrainBounds().getTopRight().getY()));
 }
 
 void GameGrid::addColsLeft(const unsigned int& numCols) {
   for(unsigned int i = 0; i < getTerrainHeight(); i++) {
     grid[i].insert(grid[i].begin(), numCols, GridSquare());
   }
-  terrainBounds.setBottomLeft(Point(terrainBounds.getBottomLeft().getX() - numCols, terrainBounds.getBottomLeft().getY()));
+  terrainBounds.setBottomLeft(Point(getTerrainBounds().getBottomLeft().getX() - numCols, getTerrainBounds().getBottomLeft().getY()));
 }
 
 void GameGrid::removeRowsTop(const unsigned int& numRows) {
   grid.erase(grid.end() - numRows, grid.end());
-  terrainBounds.setTopRight(Point(terrainBounds.getTopRight().getX(), terrainBounds.getTopRight().getY() - numRows));
+  terrainBounds.setTopRight(Point(getTerrainBounds().getTopRight().getX(), getTerrainBounds().getTopRight().getY() - numRows));
 }
 
 void GameGrid::removeRowsBottom(const unsigned int& numRows) {
   grid.erase(grid.begin(), grid.begin() + numRows);
-  terrainBounds.setBottomLeft(Point(terrainBounds.getBottomLeft().getX(), terrainBounds.getBottomLeft().getY() + numRows));
+  terrainBounds.setBottomLeft(Point(getTerrainBounds().getBottomLeft().getX(), getTerrainBounds().getBottomLeft().getY() + numRows));
 }
 
 void GameGrid::removeColsRight(const unsigned int& numCols) {
   for(unsigned int i = 0; i < getTerrainHeight(); i++) {
     grid[i].erase(grid[i].end() - numCols, grid[i].end());
   }
-  terrainBounds.setTopRight(Point(terrainBounds.getTopRight().getX() - numCols, terrainBounds.getTopRight().getY()));
+  terrainBounds.setTopRight(Point(getTerrainBounds().getTopRight().getX() - numCols, getTerrainBounds().getTopRight().getY()));
 }
 
 void GameGrid::removeColsLeft(const unsigned int& numCols) {
   for(unsigned int i = 0; i < getTerrainHeight(); i++) {
     grid[i].erase(grid[i].begin(), grid[i].begin() + numCols);
   }
-  terrainBounds.setBottomLeft(Point(terrainBounds.getBottomLeft().getX() + numCols, terrainBounds.getBottomLeft().getY()));
+  terrainBounds.setBottomLeft(Point(getTerrainBounds().getBottomLeft().getX() + numCols, getTerrainBounds().getBottomLeft().getY()));
 }
 
 void GameGrid::setSquare(const Point& p, const bool& alive) {
@@ -235,18 +235,18 @@ void GameGrid::setSquare(const Point& p, const bool& alive) {
 }
 
 bool GameGrid::isInBounds(const Point& p) const {
-  return p.getX() >= terrainBounds.getBottomLeft().getX() && p.getX() <= terrainBounds.getTopRight().getX()
-    && p.getY() >= terrainBounds.getBottomLeft().getY() && p.getY() <= terrainBounds.getTopRight().getY(); 
+  return p.getX() >= getTerrainBounds().getBottomLeft().getX() && p.getX() <= getTerrainBounds().getTopRight().getX()
+    && p.getY() >= getTerrainBounds().getBottomLeft().getY() && p.getY() <= getTerrainBounds().getTopRight().getY(); 
 }
 
 void GameGrid::serializePoint(unsigned int& serialX, unsigned int& serialY, const Point& p) const {
-  serialX = p.getX() - terrainBounds.getBottomLeft().getX();
-  serialY = p.getY() - terrainBounds.getBottomLeft().getY();
+  serialX = p.getX() - getTerrainBounds().getBottomLeft().getX();
+  serialY = p.getY() - getTerrainBounds().getBottomLeft().getY();
 }
 
 void GameGrid::normalizePoint(Point& p, const unsigned int& serialX, const unsigned int& serialY) const {
-  int normX = serialX + terrainBounds.getBottomLeft().getX();
-  int normY = serialY + terrainBounds.getBottomLeft().getY();
+  int normX = serialX + getTerrainBounds().getBottomLeft().getX();
+  int normY = serialY + getTerrainBounds().getBottomLeft().getY();
   p.setX(normX);
   p.setY(normY);
 }
