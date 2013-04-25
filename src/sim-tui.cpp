@@ -8,6 +8,8 @@
 #include "GameGrid.h"
 #include "AutParser.h"
 #include <fstream>
+#include "TuiDisplay.h"
+#include "GolSimulator.h"
 
 void readCommandLineArgs(int, char**, int&, int&, int&, int&, std::string&, bool&);
 void stringToIntPair(char*, int&, int&);
@@ -45,14 +47,11 @@ int main(int argc, char** argv) {
   }
   /* TODO: replace hardcoded values with variables according to actual screen size */
   gg.setWindowBounds(Rect(Point(-19,-7),Point(19,8)));
-  gg.printToFile(std::cout, false);
-  /*
-  initscr();
-  printw("hello, world!");
-  refresh();
-  getch();
-  endwin();
-  */
+  TuiDisplay td(gg);
+  td.open();
+  td.update();
+  td.close();
+  //gg.printToFile(std::cout, false);
   return 0;
 }
 

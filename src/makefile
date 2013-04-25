@@ -3,8 +3,8 @@ all: showgen sim-tui #test
 showgen: showgen.o GameGrid.o GridSquare.o Point.o Rect.o AutParser.o AutPreprocessor.o GolSimulator.o AutWriter.o CellState.o
 	g++ -o showgen showgen.o GameGrid.o GridSquare.o Point.o Rect.o AutParser.o AutPreprocessor.o GolSimulator.o AutWriter.o CellState.o
 
-sim-tui: sim-tui.o GameGrid.o Point.o GridSquare.o CellState.o Rect.o AutWriter.o AutParser.o AutPreprocessor.o
-	g++ -o sim-tui sim-tui.o GameGrid.o Point.o GridSquare.o CellState.o Rect.o AutWriter.o AutParser.o AutPreprocessor.o -lncurses 
+sim-tui: sim-tui.o GameGrid.o Point.o GridSquare.o CellState.o Rect.o AutWriter.o AutParser.o AutPreprocessor.o TuiDisplay.o GridDisplay.o GolSimulator.o
+	g++ -o sim-tui sim-tui.o GameGrid.o Point.o GridSquare.o CellState.o Rect.o AutWriter.o AutParser.o AutPreprocessor.o TuiDisplay.o GridDisplay.o GolSimulator.o -lncurses
 
 showgen.o: showgen.cpp GameGrid.h Rect.h Point.h AutParser.h
 	g++ -g -Wall -pedantic -c showgen.cpp
@@ -35,6 +35,12 @@ GolSimulator.o: GolSimulator.cpp GolSimulator.h GameGrid.h
 
 AutWriter.o: AutWriter.cpp AutWriter.h GameGrid.h
 	g++ -g -Wall -pedantic -c AutWriter.cpp
+
+GridDisplay.o: GridDisplay.cpp GridDisplay.h
+	g++ -g -Wall -pedantic -c GridDisplay.cpp
+
+TuiDisplay.o: TuiDisplay.cpp TuiDisplay.h GridDisplay.h
+	g++ -g -Wall -pedantic -c TuiDisplay.cpp
 
 test: TestMain.o AutPreprocessorTest.o AutPreprocessor.o AutParserTest.o AutParser.o Rect.o Point.o GameGrid.o GridSquare.o
 	g++ -o test TestMain.o AutPreprocessorTest.o AutPreprocessor.o AutParserTest.o AutParser.o Rect.o Point.o GameGrid.o GridSquare.o -lboost_unit_test_framework
