@@ -57,6 +57,32 @@ void GameGrid::printToFile(std::ostream& out,
   }
 }
 
+std::string GameGrid::getAsciiString() {
+  std::string ret;
+  for(int i = windowBounds.getTopRight().getY(); i >= windowBounds.getBottomLeft().getY(); i--) {
+    /* this prints the last row first (see GameGrid.h header comments) */
+    ret += getRowAsciiString(i);
+    ret += "\n";
+  }
+  return ret;
+}
+
+std::string GameGrid::getRowAsciiString(int row) {
+  std::string ret;
+  for(int col = windowBounds.getBottomLeft().getX(); col <= windowBounds.getTopRight().getX(); col++) {
+    if(isInBounds(Point(col, row))) {
+      unsigned int serialRow, serialCol;
+      serializePoint(serialCol, serialRow, Point(col, row));
+      ret += grid[serialRow][serialCol].getState().getChar();
+    }
+    else {
+      ret += "~";
+    }
+  }
+  return ret;
+}
+
+
 void GameGrid::printRow(const int& row, std::ostream& out) const {
   for(int col = windowBounds.getBottomLeft().getX(); col <= windowBounds.getTopRight().getX(); col++) {
     if(isInBounds(Point(col, row))) {

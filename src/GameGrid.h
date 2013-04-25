@@ -65,6 +65,8 @@ class GameGrid {
     void setTerrainBounds(const Rect& bounds);
     void setWindowBounds(const Rect& bounds);
     void printToFile(std::ostream& out, const bool& autOutput) const;
+    std::string getAsciiString();
+    std::string getRowAsciiString(int row);
     void setSquare(const Point& p, const bool& alive);
     CellState getSquareState(const Point& p) const;
     bool isInBounds(const Point& p) const;
