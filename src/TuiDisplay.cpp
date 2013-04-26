@@ -101,14 +101,14 @@ void TuiDisplay::drawBottomScroll(int yPos, int width) {
     mvprintw(yPos, charsUsedSoFar, std::string(numCharsLeftScrollTrack, '-').c_str());
     charsUsedSoFar += numCharsLeftScrollTrack;
   }
-  else {
-    mvprintw(yPos, charsUsedSoFar, std::string(numCharsInScrollTrack, '-').c_str());
-  }
   if(grid.getTerrainBounds().getWidth() > grid.getWindowBounds().getWidth()) {
     float ratio = float(grid.getWindowBounds().getWidth()) / grid.getTerrainBounds().getWidth();
     int numCharsInScrollBar = ratio * numCharsInScrollTrack; 
     mvprintw(yPos, charsUsedSoFar, std::string(numCharsInScrollBar, '#').c_str());
     charsUsedSoFar += numCharsInScrollBar;
+  }
+  else {
+    mvprintw(yPos, charsUsedSoFar, std::string(numCharsInScrollTrack, '-').c_str());
   }
   if(grid.getTerrainBounds().getTopRight().getX() > grid.getWindowBounds().getTopRight().getX()) {
     int colsRightOfWindow = grid.getTerrainBounds().getTopRight().getX() - grid.getWindowBounds().getTopRight().getX();
@@ -128,19 +128,34 @@ void TuiDisplay::drawRightScroll(int xPos, int yStart, int height) {
     int rowsAboveWindow = grid.getTerrainBounds().getTopRight().getY() - grid.getWindowBounds().getTopRight().getY();
     float ratio = float(rowsAboveWindow) / grid.getTerrainBounds().getHeight();
     int numCharsInTopScrollTrack = ratio * numCharsInScrollTrack;
-    mvprintw(0, 10, "%d", numCharsInTopScrollTrack);
     for(int i = 0; i < numCharsInTopScrollTrack; i++) {
       mvprintw(yStart + charsUsedSoFar + i, xPos, "|");
     }
+    charsUsedSoFar += numCharsInTopScrollTrack;
   }
-  
-  /*
+  if(grid.getTerrainBounds().getHeight() > grid.getWindowBounds().getHeight()) {
+    float ratio = float(grid.getWindowBounds().getHeight()) / grid.getTerrainBounds().getHeight();
+    int numCharsInScrollBar = ratio * numCharsInScrollTrack;
+    mvprintw(0, 0, "%d", numCharsInScrollTrack);
+    for(int i = 0; i < numCharsInScrollBar; i++) {
+      mvprintw(charsUsedSoFar + yStart + i, xPos, "#");
+    }
+    charsUsedSoFar += numCharsInScrollBar;
+  }
   else {
     for(int i = yStart + 1; i < yStart + height - 2; i++) {
       mvprintw(i, xPos, "|");
     }
   }
-  */
+  if(grid.getTerrainBounds().getBottomLeft().getY() < grid.getWindowBounds().getBottomLeft().getY()) {
+    int rowsBelowWindow = grid.getWindowBounds().getBottomLeft().getY() - grid.getTerrainBounds().getBottomLeft().getY();
+    float ratio = float(rowsBelowWindow) / grid.getTerrainBounds().getHeight();
+    int numCharsInBottomScrollTrack = ratio * numCharsInScrollTrack;
+    for(int i = 0; i < numCharsInBottomScrollTrack; i++) {
+      mvprintw(yStart + charsUsedSoFar + i, xPos, "|");
+    }
+    charsUsedSoFar += numCharsInBottomScrollTrack;
+  }
 }
 
 void TuiDisplay::update() {
