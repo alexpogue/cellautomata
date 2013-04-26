@@ -11,11 +11,14 @@ class TuiDisplay : public GridDisplay {
     void drawTopBorder(int yPos, int width);
     void drawLeftBorder(int xPos, int yStart, int height);
     void drawBottomScroll(int yPos, int width);
+    void drawRightScroll(int xPos, int yStart, int height);
     void printGrid();
     void printInstructions();
-    void printInfoBar(int,int);
+    void printInfoBar();
+    void runSimulation();
   public:
     TuiDisplay(GameGrid& g);
+    void setDelay(int d);
     virtual void update();
     virtual void open();
     virtual void close();
