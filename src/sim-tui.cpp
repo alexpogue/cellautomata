@@ -11,19 +11,19 @@
 #include "TuiDisplay.h"
 #include "GolSimulator.h"
 
-void readCommandLineArgs(int, char**, int&, int&, int&, int&, std::string&, bool&);
+void readCommandLineArgs(int, char**, int&, int&, int&, int&, std::string&, bool&, bool&, bool&);
 void stringToIntPair(char*, int&, int&);
 void strToInt(int& intConv, const char* string);
 void displayHelp(char* cmd);
 
 int main(int argc, char** argv) {
   int txLow, txHigh, tyLow, tyHigh;
-  bool dispHelp;
+  bool dispHelp, txGiven, tyGiven;
   std::string autFilename;
   txLow = txHigh = tyLow = tyHigh = 0;
-  dispHelp = false;
+  dispHelp = txGiven = tyGiven = false;
   try {
-    readCommandLineArgs(argc, argv, txLow, txHigh, tyLow, tyHigh, autFilename, dispHelp);
+    readCommandLineArgs(argc, argv, txLow, txHigh, tyLow, tyHigh, autFilename, dispHelp, txGiven, tyGiven);
   }
   catch(std::runtime_error e) {
     std::cerr << e.what() << "\n";
@@ -45,8 +45,24 @@ int main(int argc, char** argv) {
     std::cerr << "Could not open file: " << autFilename << "\n";
     exit(1);
   }
-  /* TODO: replace hardcoded values with variables according to actual screen size */
-  gg.setWindowBounds(Rect(Point(-19,-7),Point(19,8)));
+  Point tr;
+  Point bl;
+  bl.setX(gg.getTerrainBounds().getBottomLeft().getX());
+  bl.setY(gg.getTerrainBounds().getBottomLeft().getY());
+  tr.setX(gg.getTerrainBounds().getTopRight().getX());
+  tr.setY(gg.getTerrainBounds().getTopRight().getY());
+
+  if(txGiven) {
+    bl.setX(txLow);
+    tr.setX(txHigh);
+  }
+  if(tyGiven) {
+    bl.setY(tyLow);
+    tr.setY(tyHigh);
+  }
+
+  gg.setTerrainBounds(Rect(bl, tr));
+
   TuiDisplay td(gg);
   try {
     td.open();
@@ -60,7 +76,7 @@ int main(int argc, char** argv) {
   return 0;
 }
 
-void readCommandLineArgs(int argc, char** argv, int& txLow, int& txHigh, int& tyLow, int& tyHigh, std::string& fileIn, bool& dispHelp) {
+void readCommandLineArgs(int argc, char** argv, int& txLow, int& txHigh, int& tyLow, int& tyHigh, std::string& fileIn, bool& dispHelp, bool& txGiven, bool& tyGiven) {
   if(argc <= 1) {
     throw std::runtime_error("error: not enough command line arguments (-h for usage)");
   }
@@ -74,9 +90,11 @@ void readCommandLineArgs(int argc, char** argv, int& txLow, int& txHigh, int& ty
         throw std::runtime_error(std::string("error: no values given for flag: ") + argv[i]);
       }
       if(argv[i][2] == 'x') {
+        txGiven = true;
         stringToIntPair(argv[i+1], txLow, txHigh);
       }
       else if(argv[i][2] == 'y') {
+        tyGiven = true;
         stringToIntPair(argv[i+1], tyLow, tyHigh);
       }
       /* skip int pair */

@@ -9,6 +9,7 @@ class GridSquare {
     CellState state;
   public:
     GridSquare();
+    GridSquare(const CellState& state);
     void setState(const CellState& state);
     CellState getState() const;
 };

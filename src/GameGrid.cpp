@@ -27,6 +27,9 @@ void GameGrid::initialize(const Rect& terrain, const Rect& window, const std::ve
   terrainBounds = Rect(terrain);
   windowBounds = Rect(window);
   gameStates = std::vector<CellState>(states);
+  if(gameStates.size() == 0) {
+    gameStates.push_back(CellState(0, '~', StateColor()));
+  }
   resetGrid();
 }
 
@@ -36,7 +39,7 @@ void GameGrid::resetGrid() {
     std::vector<GridSquare> cur;
     cur.resize(getTerrainWidth());
     for(unsigned int j = 0; j < getTerrainWidth(); j++) {
-      GridSquare gs;
+      GridSquare gs(gameStates[0]);
       cur[j] = gs;
     }
     grid[i] = cur;
@@ -180,25 +183,25 @@ void GameGrid::changeColsLeft(const int& delta) {
 }
 
 void GameGrid::addRowsTop(const unsigned int& numRows) {
-  grid.insert(grid.end(), numRows, std::vector<GridSquare>(getTerrainWidth()));
+  grid.insert(grid.end(), numRows, std::vector<GridSquare>(getTerrainWidth(), GridSquare(gameStates[0])));
   terrainBounds.setTopRight(Point(getTerrainBounds().getTopRight().getX(), getTerrainBounds().getTopRight().getY() + numRows));
 }
 
 void GameGrid::addRowsBottom(const unsigned int& numRows) {
-  grid.insert(grid.begin(), numRows, std::vector<GridSquare>(getTerrainWidth()));
+  grid.insert(grid.begin(), numRows, std::vector<GridSquare>(getTerrainWidth(), GridSquare(gameStates[0])));
   terrainBounds.setBottomLeft(Point(getTerrainBounds().getBottomLeft().getX(), getTerrainBounds().getBottomLeft().getY() - numRows));
 }
 
 void GameGrid::addColsRight(const unsigned int& numCols) {
   for(unsigned int i = 0; i < getTerrainHeight(); i++) {
-    grid[i].insert(grid[i].end(), numCols, GridSquare());
+    grid[i].insert(grid[i].end(), numCols, GridSquare(gameStates[0]));
   }
   terrainBounds.setTopRight(Point(getTerrainBounds().getTopRight().getX() + numCols, getTerrainBounds().getTopRight().getY()));
 }
 
 void GameGrid::addColsLeft(const unsigned int& numCols) {
   for(unsigned int i = 0; i < getTerrainHeight(); i++) {
-    grid[i].insert(grid[i].begin(), numCols, GridSquare());
+    grid[i].insert(grid[i].begin(), numCols, GridSquare(gameStates[0]));
   }
   terrainBounds.setBottomLeft(Point(getTerrainBounds().getBottomLeft().getX() - numCols, getTerrainBounds().getBottomLeft().getY()));
 }
