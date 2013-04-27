@@ -1,5 +1,6 @@
 #include "TuiDisplay.h"
 #include "GridDisplay.h"
+#include "GolSimulator.h"
 #include <stdexcept>
 #include <vector>
 #include <ncurses.h>
@@ -10,6 +11,7 @@ TuiDisplay::TuiDisplay(GameGrid& g) :
 void TuiDisplay::open() {
   generation = 0;
   delay = 100;
+  paused = true;
   int rows, cols;
   initscr();
   getmaxyx(stdscr, rows, cols);
@@ -17,9 +19,10 @@ void TuiDisplay::open() {
     endwin();
     throw std::runtime_error("Not enough space to draw, increase terminal window size");
   }
-  std::string gridNameTemp = "Grid Name";
+  std::string gridNameTemp = grid.getName();
   noecho();
   cbreak();
+  timeout(delay);
   keypad(stdscr, true);
   displayBounds = Rect(Point(1, 2), Point(cols-2, rows - 3));
   Point windowBottomLeft(grid.getTerrainBounds().getBottomLeft().getX(), grid.getTerrainBounds().getTopRight().getY() - displayBounds.getHeight() + 1);
@@ -38,38 +41,92 @@ void TuiDisplay::open() {
 }
 
 void TuiDisplay::runSimulation() {
-  int c = getch();
+  int c = ERR;
   while(c != 'q' && c != 'Q') {
+    if(paused) {
+      timeout(-1);
+      c = getch();
+      handleInput(c);
+      update();
+      continue;
+    }
+    timeout(delay);
     c = getch();
-    if(c == KEY_DOWN) {
-      Point downbl(grid.getWindowBounds().getBottomLeft().getX(), grid.getWindowBounds().getBottomLeft().getY()-1);
-      Point downtr(grid.getWindowBounds().getTopRight().getX(), grid.getWindowBounds().getTopRight().getY()-1);
-      if(downbl.getY() >= grid.getTerrainBounds().getBottomLeft().getY()) {
-        grid.setWindowBounds(Rect(downbl, downtr));
-      }
-    }
-    if(c == KEY_UP) {
-      Point upbl(grid.getWindowBounds().getBottomLeft().getX(), grid.getWindowBounds().getBottomLeft().getY()+1);
-      Point uptr(grid.getWindowBounds().getTopRight().getX(), grid.getWindowBounds().getTopRight().getY()+1);
-      if(uptr.getY() <= grid.getTerrainBounds().getTopRight().getY()) {
-        grid.setWindowBounds(Rect(upbl, uptr));
-      }
-    }
-    if(c == KEY_LEFT) {
-      Point leftbl(grid.getWindowBounds().getBottomLeft().getX() - 1, grid.getWindowBounds().getBottomLeft().getY());
-      Point lefttr(grid.getWindowBounds().getTopRight().getX() - 1, grid.getWindowBounds().getTopRight().getY());
-      if(leftbl.getX() >= grid.getTerrainBounds().getBottomLeft().getX()) {
-        grid.setWindowBounds(Rect(leftbl, lefttr));
-      }
-    }
-    if(c == KEY_RIGHT) {
-      Point rightbl(grid.getWindowBounds().getBottomLeft().getX() + 1, grid.getWindowBounds().getBottomLeft().getY());
-      Point righttr(grid.getWindowBounds().getTopRight().getX() + 1, grid.getWindowBounds().getTopRight().getY());
-      if(righttr.getX() <= grid.getTerrainBounds().getTopRight().getX()) {
-        grid.setWindowBounds(Rect(rightbl, righttr));
-      }
-    }
+    handleInput(c);
+    grid = GolSimulator::simulate(grid, 1);
+    generation++;
     update();
+  }
+}
+
+void TuiDisplay::handleInput(int c) {
+  switch(c) {
+    case 'p':
+    case 'P':
+      paused = !paused;
+      break;
+    case 's':
+    case 'S':
+      grid = GolSimulator::simulate(grid, 1);
+      break;
+    case KEY_DOWN:
+      scrollDown();
+      break;
+    case KEY_UP:
+      scrollUp();
+      break;
+    case KEY_RIGHT:
+      scrollRight();
+      break;
+    case KEY_LEFT:
+      scrollLeft();
+      break;
+    case '+':
+    case '=':
+      updateDelay(50);
+      break;
+    case '-':
+    case '_':
+      updateDelay(-50);
+  }
+}
+
+void TuiDisplay::updateDelay(int delta) {
+  delay = delay + delta;
+  if(delay < 0) {
+    delay = delay - delta;
+  }
+}
+
+void TuiDisplay::scrollRight() {
+  Point rightbl(grid.getWindowBounds().getBottomLeft().getX() + 1, grid.getWindowBounds().getBottomLeft().getY());
+  Point righttr(grid.getWindowBounds().getTopRight().getX() + 1, grid.getWindowBounds().getTopRight().getY());
+  if(righttr.getX() <= grid.getTerrainBounds().getTopRight().getX()) {
+    grid.setWindowBounds(Rect(rightbl, righttr));
+  }
+}
+
+void TuiDisplay::scrollLeft() {
+  Point leftbl(grid.getWindowBounds().getBottomLeft().getX() - 1, grid.getWindowBounds().getBottomLeft().getY());
+  Point lefttr(grid.getWindowBounds().getTopRight().getX() - 1, grid.getWindowBounds().getTopRight().getY());
+  if(leftbl.getX() >= grid.getTerrainBounds().getBottomLeft().getX()) {
+    grid.setWindowBounds(Rect(leftbl, lefttr));
+  }
+}
+
+void TuiDisplay::scrollDown() {
+  Point downbl(grid.getWindowBounds().getBottomLeft().getX(), grid.getWindowBounds().getBottomLeft().getY()-1);
+  Point downtr(grid.getWindowBounds().getTopRight().getX(), grid.getWindowBounds().getTopRight().getY()-1);
+  if(downbl.getY() >= grid.getTerrainBounds().getBottomLeft().getY()) {
+    grid.setWindowBounds(Rect(downbl, downtr));
+  }
+}
+
+void TuiDisplay::scrollUp() {
+  Point upbl(grid.getWindowBounds().getBottomLeft().getX(), grid.getWindowBounds().getBottomLeft().getY()+1);
+  Point uptr(grid.getWindowBounds().getTopRight().getX(), grid.getWindowBounds().getTopRight().getY()+1);
+  if(uptr.getY() <= grid.getTerrainBounds().getTopRight().getY()) {
+    grid.setWindowBounds(Rect(upbl, uptr));
   }
 }
 
@@ -136,7 +193,6 @@ void TuiDisplay::drawRightScroll(int xPos, int yStart, int height) {
   if(grid.getTerrainBounds().getHeight() > grid.getWindowBounds().getHeight()) {
     float ratio = float(grid.getWindowBounds().getHeight()) / grid.getTerrainBounds().getHeight();
     int numCharsInScrollBar = ratio * numCharsInScrollTrack;
-    mvprintw(0, 0, "%d", numCharsInScrollTrack);
     for(int i = 0; i < numCharsInScrollBar; i++) {
       mvprintw(charsUsedSoFar + yStart + i, xPos, "#");
     }
@@ -164,6 +220,7 @@ void TuiDisplay::update() {
   getmaxyx(stdscr, rows, cols);
   drawBottomScroll(rows - 2, cols);
   drawRightScroll(cols - 1, 3, displayBounds.getHeight());
+  printInfoBar();
   refresh();
 }
 
@@ -199,8 +256,7 @@ void TuiDisplay::printInstructions() {
 }
 
 void TuiDisplay::printInfoBar() {
-  int rows, cols;
-  getmaxyx(stdscr, rows, cols);
+  int cols = getmaxx(stdscr);
   mvprintw(1, 0, "Delay: %d (+/-)", delay);
   mvprintw(1, cols - 18, "Generation: %d", generation);
 }

@@ -57,7 +57,6 @@ int main(int argc, char** argv) {
   }
   td.update();
   td.close();
-  //gg.printToFile(std::cout, false);
   return 0;
 }
 

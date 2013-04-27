@@ -19,7 +19,9 @@ enum Keyword {
   KEYWORD_XRANGE,
   KEYWORD_YRANGE,
   KEYWORD_INITIAL,
-  KEYWORD_UNKNOWN
+  KEYWORD_UNKNOWN,
+  KEYWORD_NAME,
+  KEYWORD_CHARS
 };
 
 size_t parseNextKeyword(const std::string& autText, size_t pos, ParseData& pd);
@@ -29,6 +31,8 @@ void handleKeywordString(const std::string& keywordStr, ParseData& pd);
 void handleInitialBlock(const std::string& kwStr, ParseData& pd);
 void handleXrangeArgs(const std::string& kwStr, ParseData& pd);
 void handleYrangeArgs(const std::string& kwStr, ParseData& pd);
+void handleNameArg(const std::string& kwStr, ParseData& pd);
+void handleCharsArgs(const std::string& kwStr, ParseData& pd);
 void printInitialStatementWarning(const std::string& kwStr, size_t startPos, size_t endPos);
 void handleInitialStatement(const std::string& statement, ParseData& pd);
 void printCouldNotFindExpected(std::string expected, std::string keyword);
@@ -61,6 +65,8 @@ void AutParser::parse(const std::string& fileName, GameGrid& gg) {
   for(unsigned int i = 0; i < pd.aliveCells.size(); i++) {
     gg.setSquare(pd.aliveCells[i], true);
   }
+  gg.setName(pd.name);
+  gg.setGameStates(pd.chars);
 }
 
 size_t parseNextKeyword(const std::string& autText, size_t pos, ParseData& pd) {
@@ -96,6 +102,12 @@ void handleKeywordString(const std::string& keywordStr, ParseData& pd) {
   else if(k == KEYWORD_YRANGE) {
     handleYrangeArgs(keywordStr, pd);
   }
+  else if(k == KEYWORD_NAME) {
+    handleNameArg(keywordStr, pd);
+  }
+  else if(k == KEYWORD_CHARS) {
+    handleCharsArgs(keywordStr, pd);
+  }
   else if(k == KEYWORD_UNKNOWN) {
     std::cout << "Warning: keyword \"" << keywordStr << "\" is unknown\n";
   }
@@ -110,6 +122,12 @@ Keyword getKeywordFromString(const std::string& keywordStr) {
   }
   else if(keywordStr.substr(0, 6) == "Yrange") {
     return KEYWORD_YRANGE;
+  }
+  else if(keywordStr.substr(0, 4) == "Name") {
+    return KEYWORD_NAME;
+  }
+  else if(keywordStr.substr(0, 5) == "Chars") {
+    return KEYWORD_CHARS;
   }
   else {
     return KEYWORD_UNKNOWN;
@@ -214,4 +232,27 @@ void assignRangeArgs(const std::string& args, int& low, int& high) {
   if(strToIntExpectedBlock(highStr, high, "[valid high value]", "range") == false) {
     return;
   }
+}
+
+void handleNameArg(const std::string& kwStr, ParseData& pd) {
+  size_t nameStart = kwStr.find_first_of("\"") + 1;
+  size_t secondQuotePos  = kwStr.find_first_of("\"", nameStart);
+  pd.name = kwStr.substr(nameStart, secondQuotePos - nameStart);
+}
+
+void handleCharsArgs(const std::string& kwStr, ParseData& pd) {
+  std::string chars;
+  size_t commaPos = kwStr.find_first_of(",");
+  size_t charStartPos = kwStr.find_last_of(" ", commaPos) + 1;
+  while(commaPos != std::string::npos && charStartPos != std::string::npos) {
+    std::string numeralCharStr = kwStr.substr(charStartPos, commaPos - charStartPos);
+    char alphabetChar = atoi(numeralCharStr.c_str());
+    chars += alphabetChar;
+    charStartPos = kwStr.find_first_of("0123456789", commaPos);
+    commaPos = kwStr.find_first_of(",;", charStartPos);
+    if(commaPos == std::string::npos) {
+      commaPos = kwStr.length();
+    }
+  }
+  pd.chars = chars;
 }

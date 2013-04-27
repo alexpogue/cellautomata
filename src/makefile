@@ -39,7 +39,7 @@ AutWriter.o: AutWriter.cpp AutWriter.h GameGrid.h
 GridDisplay.o: GridDisplay.cpp GridDisplay.h
 	g++ -g -Wall -pedantic -c GridDisplay.cpp
 
-TuiDisplay.o: TuiDisplay.cpp TuiDisplay.h GridDisplay.h
+TuiDisplay.o: TuiDisplay.cpp TuiDisplay.h GridDisplay.h GolSimulator.h
 	g++ -g -Wall -pedantic -c TuiDisplay.cpp
 
 test: TestMain.o AutPreprocessorTest.o AutPreprocessor.o AutParserTest.o AutParser.o Rect.o Point.o GameGrid.o GridSquare.o

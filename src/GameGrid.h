@@ -29,6 +29,7 @@ class GameGrid {
   private:
     std::vector< std::vector<GridSquare> > grid;
     std::vector<CellState> gameStates;
+    std::string name;
     Rect terrainBounds;
     Rect windowBounds;
     void printRow(const int& row, std::ostream& outStream) const;
@@ -56,6 +57,8 @@ class GameGrid {
     GameGrid(const Rect& terrain, const Rect& window, const std::vector<CellState>& states);
     void initialize(const Rect& terrain, const Rect& window, const std::vector<CellState>& states);
     void resetGrid();
+    std::string getName() const;
+    void setName(const std::string& n);
     unsigned int getTerrainHeight() const;
     unsigned int getTerrainWidth() const;
     unsigned int getWindowHeight() const;
@@ -67,10 +70,11 @@ class GameGrid {
     void printToFile(std::ostream& out, const bool& autOutput) const;
     std::string getAsciiString();
     std::string getRowAsciiString(int row);
-    void setSquare(const Point& p, const bool& alive);
+    void setSquare(const Point& p, int alive);
     CellState getSquareState(const Point& p) const;
     bool isInBounds(const Point& p) const;
     void setGameStates(const std::vector<CellState>& states);
+    void setGameStates(const std::string& charStates);
 };
 
 #endif

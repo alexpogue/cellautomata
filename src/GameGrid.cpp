@@ -43,6 +43,14 @@ void GameGrid::resetGrid() {
   }
 }
 
+void GameGrid::setName(const std::string& n) {
+  name = n;
+}
+
+std::string GameGrid::getName() const {
+  return name;
+}
+
 void GameGrid::printToFile(std::ostream& out, 
   const bool& autOutput) const {
   if(autOutput) {
@@ -76,7 +84,7 @@ std::string GameGrid::getRowAsciiString(int row) {
       ret += grid[serialRow][serialCol].getState().getChar();
     }
     else {
-      ret += "~";
+      ret += gameStates[0].getChar();
     }
   }
   return ret;
@@ -91,7 +99,7 @@ void GameGrid::printRow(const int& row, std::ostream& out) const {
       out << grid[serialRow][serialCol].getState().getChar();
     }
     else {
-      out << "~";
+      out << gameStates[0].getChar();
     }
   }
 }
@@ -219,19 +227,14 @@ void GameGrid::removeColsLeft(const unsigned int& numCols) {
   terrainBounds.setBottomLeft(Point(getTerrainBounds().getBottomLeft().getX() + numCols, getTerrainBounds().getBottomLeft().getY()));
 }
 
-void GameGrid::setSquare(const Point& p, const bool& alive) {
+void GameGrid::setSquare(const Point& p, int stateNum) {
   if(!isInBounds(p)) {
     std::cerr << "Tried to set out of bounds GridSquare at " << p << "\n";
     return;
   }
   unsigned int serialX, serialY;
   serializePoint(serialX, serialY, p);
-  if(alive) {
-    grid[serialY][serialX].setState(gameStates[1]);
-  }
-  else {
-    grid[serialY][serialX].setState(gameStates[0]);
-  }
+  grid[serialY][serialX].setState(gameStates[stateNum]);
 }
 
 bool GameGrid::isInBounds(const Point& p) const {
@@ -258,5 +261,18 @@ CellState GameGrid::getSquareState(const Point& p) const {
 }
 
 void GameGrid::setGameStates(const std::vector<CellState>& states) {
-  gameStates = std::vector<CellState>(states);
+  gameStates = states;
+  for(int i = getTerrainBounds().getBottomLeft().getX(); i <= getTerrainBounds().getTopRight().getX(); i++) {
+    for(int j = getTerrainBounds().getBottomLeft().getY(); j <= getTerrainBounds().getTopRight().getY(); j++) {
+      setSquare(Point(i, j), getSquareState(Point(i, j)).getNum());
+    }
+  }
+}
+
+void GameGrid::setGameStates(const std::string& chars) {
+  std::vector<CellState> states;
+  for(unsigned int i = 0; i < chars.length(); i++) {
+    states.push_back(CellState(i, chars[i], StateColor()));
+  }
+  setGameStates(states);
 }
