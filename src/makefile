@@ -1,10 +1,19 @@
-all: showgen sim-tui #test
+all: showgen sim-tui sim-gui #test
 
 showgen: showgen.o GameGrid.o GridSquare.o Point.o Rect.o AutParser.o AutPreprocessor.o GolSimulator.o AutWriter.o CellState.o
 	g++ -o showgen showgen.o GameGrid.o GridSquare.o Point.o Rect.o AutParser.o AutPreprocessor.o GolSimulator.o AutWriter.o CellState.o
 
 sim-tui: sim-tui.o GameGrid.o Point.o GridSquare.o CellState.o Rect.o AutWriter.o AutParser.o AutPreprocessor.o TuiDisplay.o GridDisplay.o GolSimulator.o
 	g++ -o sim-tui sim-tui.o GameGrid.o Point.o GridSquare.o CellState.o Rect.o AutWriter.o AutParser.o AutPreprocessor.o TuiDisplay.o GridDisplay.o GolSimulator.o -lncurses
+
+sim-gui: sim-gui.cpp GridView.cpp GridView.h ControlDialog.cpp ControlDialog.h makefileqt
+	make -f makefileqt
+
+makefileqt: sim-gui.pro
+	qmake sim-gui.pro -o makefileqt
+
+sim-gui.pro: sim-gui.cpp GridView.cpp GridView.h ControlDialog.cpp ControlDialog.h
+	qmake -project -o sim-gui.pro -nopwd sim-gui.cpp GridView.cpp GridView.h ControlDialog.cpp ControlDialog.h
 
 showgen.o: showgen.cpp GameGrid.h Rect.h Point.h AutParser.h
 	g++ -g -Wall -pedantic -c showgen.cpp
