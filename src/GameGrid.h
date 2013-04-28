@@ -75,6 +75,7 @@ class GameGrid {
     bool isInBounds(const Point& p) const;
     void setGameStates(const std::vector<CellState>& states);
     void setGameStates(const std::string& charStates);
+    void refillStates();
 };
 
 #endif

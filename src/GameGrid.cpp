@@ -264,18 +264,27 @@ CellState GameGrid::getSquareState(const Point& p) const {
 }
 
 void GameGrid::setGameStates(const std::vector<CellState>& states) {
-  gameStates = states;
+  gameStates = std::vector<CellState>(states);
+  refillStates();
+}
+
+void GameGrid::setGameStates(const std::string& chars) {
+  for(unsigned int i = 0; i < chars.length(); i++) {
+    CellState toSet(i, chars[i], StateColor());
+    if(i >= gameStates.size()) {
+      gameStates.push_back(toSet);
+    }
+    else {
+      gameStates[i] = toSet;
+    }
+  }
+  refillStates();
+}
+
+void GameGrid::refillStates() {
   for(int i = getTerrainBounds().getBottomLeft().getX(); i <= getTerrainBounds().getTopRight().getX(); i++) {
     for(int j = getTerrainBounds().getBottomLeft().getY(); j <= getTerrainBounds().getTopRight().getY(); j++) {
       setSquare(Point(i, j), getSquareState(Point(i, j)).getNum());
     }
   }
-}
-
-void GameGrid::setGameStates(const std::string& chars) {
-  std::vector<CellState> states;
-  for(unsigned int i = 0; i < chars.length(); i++) {
-    states.push_back(CellState(i, chars[i], StateColor()));
-  }
-  setGameStates(states);
 }

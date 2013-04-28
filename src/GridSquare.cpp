@@ -12,7 +12,7 @@ GridSquare::GridSquare(const CellState& s) : state(s.getNum()) {
 }
 
 void GridSquare::setState(const CellState& newState) {
-  state = newState;
+  state = CellState(newState);
 }
 
 CellState GridSquare::getState() const {
