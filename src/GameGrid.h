@@ -48,6 +48,7 @@ class GameGrid {
     void removeRowsBottom(const unsigned int& numRows);
     void removeColsRight(const unsigned int& numCols);
     void removeColsLeft(const unsigned int& numCols);
+    void refillStates();
 
   public:
     GameGrid();
@@ -59,10 +60,6 @@ class GameGrid {
     void resetGrid();
     std::string getName() const;
     void setName(const std::string& n);
-    unsigned int getTerrainHeight() const;
-    unsigned int getTerrainWidth() const;
-    unsigned int getWindowHeight() const;
-    unsigned int getWindowWidth() const;
     Rect getTerrainBounds() const;
     Rect getWindowBounds() const;
     void setTerrainBounds(const Rect& bounds);
@@ -75,7 +72,6 @@ class GameGrid {
     bool isInBounds(const Point& p) const;
     void setGameStates(const std::vector<CellState>& states);
     void setGameStates(const std::string& charStates);
-    void refillStates();
 };
 
 #endif

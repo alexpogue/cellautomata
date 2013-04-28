@@ -34,11 +34,11 @@ void GameGrid::initialize(const Rect& terrain, const Rect& window, const std::ve
 }
 
 void GameGrid::resetGrid() {
-  grid.resize(getTerrainHeight());
-  for(unsigned int i = 0; i < getTerrainHeight(); i++) {
+  grid.resize(getTerrainBounds().getHeight());
+  for(unsigned int i = 0; i < getTerrainBounds().getHeight(); i++) {
     std::vector<GridSquare> cur;
-    cur.resize(getTerrainWidth());
-    for(unsigned int j = 0; j < getTerrainWidth(); j++) {
+    cur.resize(getTerrainBounds().getWidth());
+    for(unsigned int j = 0; j < getTerrainBounds().getWidth(); j++) {
       GridSquare gs(gameStates[0]);
       cur[j] = gs;
     }
@@ -107,22 +107,6 @@ void GameGrid::printRow(const int& row, std::ostream& out) const {
   }
 }
 
-unsigned int GameGrid::getTerrainWidth() const {
-  return getTerrainBounds().getWidth();
-}
-
-unsigned int GameGrid::getTerrainHeight() const {
-  return getTerrainBounds().getHeight();
-}
-
-unsigned int GameGrid::getWindowHeight() const {
-  return getWindowBounds().getHeight();
-}
-
-unsigned int GameGrid::getWindowWidth() const {
-  return getWindowBounds().getWidth();
-}
-
 Rect GameGrid::getTerrainBounds() const {
   return terrainBounds;
 }
@@ -183,24 +167,24 @@ void GameGrid::changeColsLeft(const int& delta) {
 }
 
 void GameGrid::addRowsTop(const unsigned int& numRows) {
-  grid.insert(grid.end(), numRows, std::vector<GridSquare>(getTerrainWidth(), GridSquare(gameStates[0])));
+  grid.insert(grid.end(), numRows, std::vector<GridSquare>(getTerrainBounds().getWidth(), GridSquare(gameStates[0])));
   terrainBounds.setTopRight(Point(getTerrainBounds().getTopRight().getX(), getTerrainBounds().getTopRight().getY() + numRows));
 }
 
 void GameGrid::addRowsBottom(const unsigned int& numRows) {
-  grid.insert(grid.begin(), numRows, std::vector<GridSquare>(getTerrainWidth(), GridSquare(gameStates[0])));
+  grid.insert(grid.begin(), numRows, std::vector<GridSquare>(getTerrainBounds().getWidth(), GridSquare(gameStates[0])));
   terrainBounds.setBottomLeft(Point(getTerrainBounds().getBottomLeft().getX(), getTerrainBounds().getBottomLeft().getY() - numRows));
 }
 
 void GameGrid::addColsRight(const unsigned int& numCols) {
-  for(unsigned int i = 0; i < getTerrainHeight(); i++) {
+  for(unsigned int i = 0; i < getTerrainBounds().getHeight(); i++) {
     grid[i].insert(grid[i].end(), numCols, GridSquare(gameStates[0]));
   }
   terrainBounds.setTopRight(Point(getTerrainBounds().getTopRight().getX() + numCols, getTerrainBounds().getTopRight().getY()));
 }
 
 void GameGrid::addColsLeft(const unsigned int& numCols) {
-  for(unsigned int i = 0; i < getTerrainHeight(); i++) {
+  for(unsigned int i = 0; i < getTerrainBounds().getHeight(); i++) {
     grid[i].insert(grid[i].begin(), numCols, GridSquare(gameStates[0]));
   }
   terrainBounds.setBottomLeft(Point(getTerrainBounds().getBottomLeft().getX() - numCols, getTerrainBounds().getBottomLeft().getY()));
@@ -217,14 +201,14 @@ void GameGrid::removeRowsBottom(const unsigned int& numRows) {
 }
 
 void GameGrid::removeColsRight(const unsigned int& numCols) {
-  for(unsigned int i = 0; i < getTerrainHeight(); i++) {
+  for(unsigned int i = 0; i < getTerrainBounds().getHeight(); i++) {
     grid[i].erase(grid[i].end() - numCols, grid[i].end());
   }
   terrainBounds.setTopRight(Point(getTerrainBounds().getTopRight().getX() - numCols, getTerrainBounds().getTopRight().getY()));
 }
 
 void GameGrid::removeColsLeft(const unsigned int& numCols) {
-  for(unsigned int i = 0; i < getTerrainHeight(); i++) {
+  for(unsigned int i = 0; i < getTerrainBounds().getHeight(); i++) {
     grid[i].erase(grid[i].begin(), grid[i].begin() + numCols);
   }
   terrainBounds.setBottomLeft(Point(getTerrainBounds().getBottomLeft().getX() + numCols, getTerrainBounds().getBottomLeft().getY()));

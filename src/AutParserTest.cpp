@@ -8,12 +8,12 @@
 #include <iostream>
 
 void checkGridsEqual(GameGrid &expected, GameGrid &test) {
-  BOOST_CHECK_EQUAL(expected.getTerrainHeight(), test.getTerrainHeight());
-  BOOST_CHECK_EQUAL(expected.getTerrainWidth(), test.getTerrainWidth());
-  BOOST_CHECK_EQUAL(expected.getWindowHeight(), test.getWindowHeight());
-  BOOST_CHECK_EQUAL(expected.getWindowWidth(), test.getWindowWidth());
-  if(expected.getTerrainHeight() == test.getTerrainHeight()
-      && expected.getTerrainWidth() == test.getTerrainWidth()) {
+  BOOST_CHECK_EQUAL(expected.getTerrainBounds.getHeight(), test.getTerrainBounds.getHeight());
+  BOOST_CHECK_EQUAL(expected.getTerrainBounds.getWidth(), test.getTerrainBounds.getWidth());
+  BOOST_CHECK_EQUAL(expected.getWindowBounds.getHeight(), test.getWindowBounds.getHeight());
+  BOOST_CHECK_EQUAL(expected.getWindowBounds.getWidth(), test.getWindowBounds.getWidth());
+  if(expected.getTerrainBounds.getHeight() == test.getTerrainBounds.getHeight()
+      && expected.getTerrainBounds.getWidth() == test.getTerrainBounds.getWidth()) {
     for(unsigned int i = expected.getTerrainBounds().getBottomLeft().getY(); i <= expected.getTerrainBounds().getTopRight().getY(); i++) {
       for(unsigned int j = expected.getTerrainBounds().getBottomLeft().getX(); j < expected.getTerrainBounds().getTopRight().getX(); j++) {
         Point p(j, i);

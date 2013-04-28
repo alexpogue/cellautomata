@@ -6,14 +6,14 @@ showgen: showgen.o GameGrid.o GridSquare.o Point.o Rect.o AutParser.o AutPreproc
 sim-tui: sim-tui.o GameGrid.o Point.o GridSquare.o CellState.o Rect.o AutWriter.o AutParser.o AutPreprocessor.o TuiDisplay.o GridDisplay.o GolSimulator.o
 	g++ -o sim-tui sim-tui.o GameGrid.o Point.o GridSquare.o CellState.o Rect.o AutWriter.o AutParser.o AutPreprocessor.o TuiDisplay.o GridDisplay.o GolSimulator.o -lncurses
 
-sim-gui: sim-gui.cpp GridView.cpp GridView.h ControlDialog.cpp ControlDialog.h makefileqt
+sim-gui: sim-gui.cpp GridView.cpp GridView.h ControlDialog.cpp ControlDialog.h makefileqt GameGrid.o #GG.o ensures we have GG's dependencies before making
 	make -f makefileqt
 
 makefileqt: sim-gui.pro
 	qmake sim-gui.pro -o makefileqt
 
-sim-gui.pro: sim-gui.cpp GridView.cpp GridView.h ControlDialog.cpp ControlDialog.h
-	qmake -project -o sim-gui.pro -nopwd sim-gui.cpp GridView.cpp GridView.h ControlDialog.cpp ControlDialog.h
+sim-gui.pro: sim-gui.cpp GridView.cpp GridView.h ControlDialog.cpp ControlDialog.h GameGrid.cpp GameGrid.h
+	qmake -project -o sim-gui.pro -nopwd sim-gui.cpp GridView.cpp GridView.h ControlDialog.cpp ControlDialog.h GameGrid.cpp GameGrid.h
 
 showgen.o: showgen.cpp GameGrid.h Rect.h Point.h AutParser.h
 	g++ -g -Wall -pedantic -c showgen.cpp
