@@ -1,19 +1,19 @@
 all: showgen sim-tui sim-gui #test
 
-showgen: showgen.o GameGrid.o GridSquare.o Point.o Rect.o AutParser.o AutPreprocessor.o GolSimulator.o AutWriter.o CellState.o
-	g++ -o showgen showgen.o GameGrid.o GridSquare.o Point.o Rect.o AutParser.o AutPreprocessor.o GolSimulator.o AutWriter.o CellState.o
+showgen: showgen.o GameGrid.o GridSquare.o Point.o Rect.o AutParser.o AutPreprocessor.o GolSimulator.o AutWriter.o CellState.o StateColor.o
+	g++ -o showgen showgen.o GameGrid.o GridSquare.o Point.o Rect.o AutParser.o AutPreprocessor.o GolSimulator.o AutWriter.o CellState.o StateColor.o
 
-sim-tui: sim-tui.o GameGrid.o Point.o GridSquare.o CellState.o Rect.o AutWriter.o AutParser.o AutPreprocessor.o TuiDisplay.o GridDisplay.o GolSimulator.o
-	g++ -o sim-tui sim-tui.o GameGrid.o Point.o GridSquare.o CellState.o Rect.o AutWriter.o AutParser.o AutPreprocessor.o TuiDisplay.o GridDisplay.o GolSimulator.o -lncurses
+sim-tui: sim-tui.o GameGrid.o Point.o GridSquare.o CellState.o Rect.o AutWriter.o AutParser.o AutPreprocessor.o TuiDisplay.o GridDisplay.o GolSimulator.o StateColor.o
+	g++ -o sim-tui sim-tui.o GameGrid.o Point.o GridSquare.o CellState.o Rect.o AutWriter.o AutParser.o AutPreprocessor.o TuiDisplay.o GridDisplay.o GolSimulator.o StateColor.o -lncurses
 
-sim-gui: sim-gui.cpp GridView.cpp GridView.h ControlDialog.cpp ControlDialog.h makefileqt GameGrid.o #GG.o ensures we have GG's dependencies before making
+sim-gui: sim-gui.cpp GridView.cpp GridView.h ControlDialog.cpp ControlDialog.h makefileqt AutParser.o GameGrid.o AutPreprocessor.o #class.o ensures we have class's dependencies before making
 	make -f makefileqt
 
 makefileqt: sim-gui.pro
 	qmake sim-gui.pro -o makefileqt
 
-sim-gui.pro: sim-gui.cpp GridView.cpp GridView.h ControlDialog.cpp ControlDialog.h GameGrid.cpp GameGrid.h
-	qmake -project -o sim-gui.pro -nopwd sim-gui.cpp GridView.cpp GridView.h ControlDialog.cpp ControlDialog.h GameGrid.cpp GameGrid.h
+sim-gui.pro: sim-gui.cpp GridView.cpp GridView.h ControlDialog.cpp ControlDialog.h GameGrid.cpp GameGrid.h GolSimulator.cpp GolSimulator.h
+	qmake -project -o sim-gui.pro -nopwd sim-gui.cpp GridView.cpp GridView.h ControlDialog.cpp ControlDialog.h GameGrid.cpp GameGrid.h GolSimulator.cpp GolSimulator.h
 
 showgen.o: showgen.cpp GameGrid.h Rect.h Point.h AutParser.h
 	g++ -g -Wall -pedantic -c showgen.cpp
@@ -66,8 +66,11 @@ AutParser.o: AutParser.cpp AutParser.h GameGrid.h
 AutParserTest.o: AutParserTest.cpp AutParser.h GameGrid.h Rect.h Point.h
 	g++ -g -Wall -pedantic -c AutParserTest.cpp
 
+StateColor.o: StateColor.cpp StateColor.h
+	g++ -g -Wall -pedantic -c StateColor.cpp
+
 clean:
 	rm *.o
 
-project.tar.gz: makefile showgen.cpp AutParser.cpp AutParser.h AutParserTest.cpp AutPreprocessor.cpp AutPreprocessor.h AutPreprocessorTest.cpp GameGrid.cpp GameGrid.h GridSquare.cpp GridSquare.h Point.cpp Point.h Rect.cpp Rect.h TestMain.cpp
-	tar -czf project.tar.gz makefile showgen.cpp AutParser.cpp AutParser.h AutParserTest.cpp AutPreprocessor.cpp AutPreprocessor.h AutPreprocessorTest.cpp GameGrid.cpp GameGrid.h GridSquare.cpp GridSquare.h Point.cpp Point.h Rect.cpp Rect.h TestMain.cpp
+project.tar.gz: makefile showgen.cpp AutParser.cpp AutParser.h AutParserTest.cpp AutPreprocessor.cpp AutPreprocessor.h AutPreprocessorTest.cpp GameGrid.cpp GameGrid.h GridSquare.cpp GridSquare.h Point.cpp Point.h Rect.cpp Rect.h TestMain.cpp AutWriter.cpp AutWriter.h CellState.cpp CellState.h ControlDialog.cpp ControlDialog.h GameType.h GolSimulator.cpp GolSimulator.h GridDisplay.cpp GridDisplay.h GridView.cpp GridView.h sim-gui.cpp sim-tui.cpp StateColor.cpp StateColor.h TuiDisplay.cpp TuiDisplay.h
+	tar -czf project.tar.gz makefile showgen.cpp AutParser.cpp AutParser.h AutParserTest.cpp AutPreprocessor.cpp AutPreprocessor.h AutPreprocessorTest.cpp GameGrid.cpp GameGrid.h GridSquare.cpp GridSquare.h Point.cpp Point.h Rect.cpp Rect.h TestMain.cpp AutWriter.cpp AutWriter.h CellState.cpp CellState.h ControlDialog.cpp ControlDialog.h GameType.h GolSimulator.cpp GolSimulator.h GridDisplay.cpp GridDisplay.h GridView.cpp GridView.h sim-gui.cpp sim-tui.cpp StateColor.cpp StateColor.h TuiDisplay.cpp TuiDisplay.h
