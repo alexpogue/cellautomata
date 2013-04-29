@@ -2,6 +2,7 @@
 #include <QPen>
 #include <QCloseEvent>
 #include <QResizeEvent>
+#include <QGraphicsRectItem>
 #include "GameGrid.h"
 #include "GolSimulator.h"
 
@@ -29,24 +30,32 @@ void GridView::displayNextGen() {
 
 void GridView::drawGrid() {
   float cellSize;
-  float widthRatio = grid.getTerrainBounds().getWidth() / size().width();
-  float heightRatio = grid.getTerrainBounds().getHeight() / size().height();
-  std::cout << "size().width() = " << size().width() << "\n";
-  std::cout << "size().height() = " << size().height() << "\n";
-  if(widthRatio > heightRatio) {
-    cellSize = float(size().height()) / grid.getTerrainBounds().getHeight();
-    std::cout << "using width\n";
-  }
-  else {
-    cellSize = float(size().width()) / grid.getTerrainBounds().getWidth(); 
-    std::cout << "using height\n";
-  }
+  cellSize = float(size().width()) / grid.getTerrainBounds().getWidth(); 
   for(unsigned int x = 0; x < grid.getTerrainBounds().getWidth(); x++) {
     scene->addLine(x * cellSize, 0, x * cellSize, cellSize * grid.getTerrainBounds().getHeight(), QPen(Qt::black));
   }
   for(unsigned int y = 0; y < grid.getTerrainBounds().getHeight(); y++) {
     scene->addLine(0, y * cellSize, cellSize * grid.getTerrainBounds().getWidth(), y * cellSize, QPen(Qt::black));
   }
+  /* EXAMPLE DRAWING RECT
+  QGraphicsRectItem* rect = new QGraphicsRectItem(0,0,cellSize, cellSize);
+  rect->setBrush(QBrush(Qt::black));
+  scene->addItem(rect);
+  /* BAD CODE, FIX
+  for(unsigned int x = 0; x < grid.getTerrainBounds().getWidth(); x++) {
+    for(unsigned int y = 0; y < grid.getTerrainBounds().getHeight(); y++) {
+      if(grid.getSquareState(Point(x, y)).getNum() == 1) {
+        int yHigh = size().height() - grid.getTerrainBounds().getTopRight().getY() * cellSize;
+        int yLow = size().height() - grid.getTerrainBounds().getBottomLeft().getY() * cellSize;
+        std::cout << "Here!\n";
+        std::cout << "yHigh = " << yHigh << ", xHigh = " << yLow << "\n";
+        QGraphicsRectItem* rect = new QGraphicsRectItem(x * cellSize, yLow, x * cellSize + cellSize, yHigh);
+        rect->setBrush(QBrush(Qt::black));
+        scene->addItem(rect);
+      }
+    }
+  }
+  */
 }
 
 void GridView::changeZoom(int factor) {
