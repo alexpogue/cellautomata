@@ -14,7 +14,7 @@ class CellState {
     void setChar(char charRep);
     char getChar() const;
     void setColor(const StateColor& color);
-    void getColor(StateColor& color) const;
+    StateColor getColor() const;
 };
 
 #endif

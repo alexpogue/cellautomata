@@ -2,6 +2,20 @@
 /* TODO: REMOVE. FOR TEST ERROR MESSAGES */
 #include <iostream>
 #include "AutWriter.h"
+#include "StateColor.h"
+
+static const StateColor defaultColors[] = {
+  StateColor(255, 255, 255), 
+  StateColor(0, 0, 0), 
+  StateColor(255, 0, 0),
+  StateColor(0, 255, 0),
+  StateColor(0, 0, 255),
+  StateColor(255, 255, 0),
+  StateColor(0, 255, 255),
+  StateColor(255, 0, 255),
+  StateColor(255, 102, 0),
+  StateColor(102, 0, 153)
+};
 
 GameGrid::GameGrid() {
   initialize(Rect(), Rect(), std::vector<CellState>());
@@ -27,8 +41,14 @@ void GameGrid::initialize(const Rect& terrain, const Rect& window, const std::ve
   terrainBounds = Rect(terrain);
   windowBounds = Rect(window);
   gameStates = std::vector<CellState>(states);
-  if(gameStates.size() == 0) {
-    gameStates.push_back(CellState(0, '~', StateColor()));
+  for(int i = gameStates.size(); i < 10; i++) {
+    if(i == 0) {
+      gameStates.push_back(CellState(0, '~', defaultColors[0]));
+    }
+    else {
+      /* ascii arithmetic to convert int to char */
+      gameStates.push_back(CellState(i, i + '0', defaultColors[i]));
+    }
   }
   resetGrid();
 }
@@ -265,10 +285,28 @@ void GameGrid::setGameStates(const std::string& chars) {
   refillStates();
 }
 
+void GameGrid::setGameStateColors(const std::vector<StateColor>& colors) {
+  for(unsigned char i = 0; i < colors.size(); i++) {
+    if(i >= gameStates.size()) {
+      CellState toSet(i, '0' + i, colors[i]);
+      gameStates.push_back(toSet);
+    }
+    else {
+      CellState toSet(i, gameStates[i].getChar(), colors[i]);
+      gameStates[i] = toSet;
+    }
+  }
+  refillStates();
+}
+
 void GameGrid::refillStates() {
   for(int i = getTerrainBounds().getBottomLeft().getX(); i <= getTerrainBounds().getTopRight().getX(); i++) {
     for(int j = getTerrainBounds().getBottomLeft().getY(); j <= getTerrainBounds().getTopRight().getY(); j++) {
       setSquare(Point(i, j), getSquareState(Point(i, j)).getNum());
     }
   }
+}
+
+std::vector<CellState> GameGrid::getGameStates() const {
+  return gameStates;
 }

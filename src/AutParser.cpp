@@ -12,7 +12,7 @@ struct ParseData {
   std::string name;
   std::string chars;
   std::string rules;
-  std::vector<std::vector<char> > colors;
+  std::vector<StateColor> colors;
 };
 
 enum Keyword {
@@ -21,7 +21,8 @@ enum Keyword {
   KEYWORD_INITIAL,
   KEYWORD_UNKNOWN,
   KEYWORD_NAME,
-  KEYWORD_CHARS
+  KEYWORD_CHARS,
+  KEYWORD_COLORS
 };
 
 size_t parseNextKeyword(const std::string& autText, size_t pos, ParseData& pd);
@@ -33,6 +34,7 @@ void handleXrangeArgs(const std::string& kwStr, ParseData& pd);
 void handleYrangeArgs(const std::string& kwStr, ParseData& pd);
 void handleNameArg(const std::string& kwStr, ParseData& pd);
 void handleCharsArgs(const std::string& kwStr, ParseData& pd);
+void handleColorsArgs(const std::string& kwStr, ParseData& pd);
 void printInitialStatementWarning(const std::string& kwStr, size_t startPos, size_t endPos);
 void handleInitialStatement(const std::string& statement, ParseData& pd);
 void printCouldNotFindExpected(std::string expected, std::string keyword);
@@ -67,6 +69,7 @@ void AutParser::parse(const std::string& fileName, GameGrid& gg) {
   }
   gg.setName(pd.name);
   gg.setGameStates(pd.chars);
+  gg.setGameStateColors(pd.colors);
 }
 
 size_t parseNextKeyword(const std::string& autText, size_t pos, ParseData& pd) {
@@ -108,6 +111,9 @@ void handleKeywordString(const std::string& keywordStr, ParseData& pd) {
   else if(k == KEYWORD_CHARS) {
     handleCharsArgs(keywordStr, pd);
   }
+  else if(k == KEYWORD_COLORS) {
+    handleColorsArgs(keywordStr, pd);
+  }
   else if(k == KEYWORD_UNKNOWN) {
     std::cout << "Warning: keyword \"" << keywordStr << "\" is unknown\n";
   }
@@ -128,6 +134,9 @@ Keyword getKeywordFromString(const std::string& keywordStr) {
   }
   else if(keywordStr.substr(0, 5) == "Chars") {
     return KEYWORD_CHARS;
+  }
+  else if(keywordStr.substr(0, 6) == "Colors") {
+    return KEYWORD_COLORS;
   }
   else {
     return KEYWORD_UNKNOWN;
@@ -242,7 +251,7 @@ void handleNameArg(const std::string& kwStr, ParseData& pd) {
 
 void handleCharsArgs(const std::string& kwStr, ParseData& pd) {
   std::string chars;
-  size_t commaPos = kwStr.find_first_of(",");
+  size_t commaPos = kwStr.find_first_of(",;"); /* semicolon because there may be a single value given */
   size_t charStartPos = kwStr.find_last_of(" ", commaPos) + 1;
   while(commaPos != std::string::npos && charStartPos != std::string::npos) {
     std::string numeralCharStr = kwStr.substr(charStartPos, commaPos - charStartPos);
@@ -255,4 +264,30 @@ void handleCharsArgs(const std::string& kwStr, ParseData& pd) {
     }
   }
   pd.chars = chars;
+}
+
+void handleColorsArgs(const std::string& kwStr, ParseData& pd) {
+  size_t firstNumeral = 0;
+  size_t commaPos = 0;
+  while(commaPos != std::string::npos && firstNumeral != std::string::npos) {
+    StateColor color;
+    size_t startParen = kwStr.find_first_of("(", commaPos);
+    firstNumeral = kwStr.find_first_of("0123456789", startParen);
+    commaPos = kwStr.find_first_of(",;", firstNumeral);
+    size_t endParen = kwStr.find_first_of(")", startParen);
+    for(int j = 0; j < 3 && firstNumeral < endParen; j++) {
+      /* so that we don't include end paran in numeralCharStr */
+      if(endParen < commaPos) {
+        commaPos = endParen;
+      }
+      std::string numeralCharStr = kwStr.substr(firstNumeral, commaPos - firstNumeral);
+      unsigned char colorVal = atoi(numeralCharStr.c_str());
+      if(j == 0) color.red = colorVal;
+      else if(j == 1) color.green = colorVal;
+      else if(j == 2) color.blue = colorVal;
+      firstNumeral = kwStr.find_first_of("0123456789", commaPos);
+      commaPos = kwStr.find_first_of(",;", commaPos + 1);
+    }
+    pd.colors.push_back(color);
+  }
 }

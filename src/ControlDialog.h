@@ -14,18 +14,19 @@ class ControlDialog : public QDialog {
   public:
     ControlDialog(QWidget* parent = 0);
   signals:
-//    void stepGeneration();
-//    void playAnimation();
-//    void pauseAnimation();
+    void stepGeneration();
+    void playAnimation();
+    void pauseAnimation();
     void changeDelay(int delay);
     void dialogClosed();
     void changeZoom(int zoom);
   private slots:
-//    void playPauseClicked();
-//    void stepClicked();
+    void playPauseClicked();
+    void stepClicked();
     void delayChanged(int newVal);
     void zoomChanged(int newVal);
   private:
+    bool playing;
     void closeEvent(QCloseEvent* event);
     QLabel* zoomLabel;
     QSpinBox* zoomSpinBox;

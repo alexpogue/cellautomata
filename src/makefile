@@ -14,6 +14,7 @@ makefileqt: sim-gui.pro
 
 sim-gui.pro: sim-gui.cpp GridView.cpp GridView.h ControlDialog.cpp ControlDialog.h GameGrid.cpp GameGrid.h GolSimulator.cpp GolSimulator.h
 	qmake -project -o sim-gui.pro -nopwd sim-gui.cpp GridView.cpp GridView.h ControlDialog.cpp ControlDialog.h GameGrid.cpp GameGrid.h GolSimulator.cpp GolSimulator.h
+	echo "CONFIG += debug" >> sim-gui.pro
 
 showgen.o: showgen.cpp GameGrid.h Rect.h Point.h AutParser.h
 	g++ -g -Wall -pedantic -c showgen.cpp

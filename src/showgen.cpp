@@ -88,10 +88,6 @@ int main(int argc, char** argv) {
   Point tr;
 
   GameGrid gg;
-  std::vector<CellState> gameStates;
-  gameStates.push_back(CellState(0, '~', StateColor()));
-  gameStates.push_back(CellState(1, '1', StateColor()));
-  gg.setGameStates(gameStates);
   try {
     AutParser::parse(inputFile, gg);
   } catch(std::ifstream::failure e) {

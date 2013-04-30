@@ -27,8 +27,6 @@ void CellState::setColor(const StateColor& color) {
   colorRepresentation = color;
 }
 
-void CellState::getColor(StateColor& color) const {
-  color.rgb[0] = colorRepresentation.rgb[0];
-  color.rgb[1] = colorRepresentation.rgb[1];
-  color.rgb[2] = colorRepresentation.rgb[2];
+StateColor CellState::getColor() const {
+  return colorRepresentation;
 }

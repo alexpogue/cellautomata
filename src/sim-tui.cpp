@@ -33,11 +33,7 @@ int main(int argc, char** argv) {
     displayHelp(argv[0]);
   }
   Rect terrainBounds(Point(txLow, tyLow), Point(txHigh, tyHigh));
-  std::vector<CellState> gameStates;
-  gameStates.push_back(CellState(0, '~', StateColor()));
-  gameStates.push_back(CellState(1, '1', StateColor()));
   GameGrid gg;
-  gg.setGameStates(gameStates);
   try {
     AutParser::parse(autFilename, gg);
   }

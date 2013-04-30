@@ -1,19 +1,19 @@
 #include "StateColor.h"
 
 StateColor::StateColor() {
-  rgb[0] = 0;
-  rgb[1] = 0;
-  rgb[2] = 0;
+  red = 0;
+  green = 0;
+  blue = 0;
 }
 
-StateColor::StateColor(char r, char g, char b) {
-  rgb[0] = r;
-  rgb[1] = g;
-  rgb[2] = b;
+StateColor::StateColor(unsigned char r, unsigned char g, unsigned char b) {
+  red = r;
+  green = g;
+  blue = b;
 }
 
-void StateColor::setRgb(char r, char g, char b) {
-  rgb[0] = r;
-  rgb[1] = g;
-  rgb[2] = b;
+void StateColor::setRgb(unsigned char r, unsigned char g, unsigned char b) {
+  red = r;
+  green = g;
+  blue = b;
 }

@@ -36,11 +36,7 @@ int main(int argc, char** argv) {
     displayHelp(argv[0]);
   }
   Rect terrainBounds(Point(txLow, tyLow), Point(txHigh, tyHigh));
-  std::vector<CellState> gameStates;
-  gameStates.push_back(CellState(0, '~', StateColor(0, 0, 0)));
-  gameStates.push_back(CellState(1, '1', StateColor(255, 255, 255)));
   GameGrid gg;
-  gg.setGameStates(gameStates);
   try {
     AutParser::parse(autFilename, gg);
   }
@@ -48,6 +44,12 @@ int main(int argc, char** argv) {
     std::cerr << "Could not open file: " << autFilename << "\n";
     exit(1);
   }
+  std::cout << "state 0's rgb = (" << (int)gg.getGameStates()[0].getColor().red << ", ";
+  std::cout << (int)gg.getGameStates()[0].getColor().blue << ", ";
+  std::cout << (int)gg.getGameStates()[0].getColor().green << ")\n";
+  std::cout << "state 1's rgb = (" << (int)gg.getGameStates()[1].getColor().red << ", ";
+  std::cout << (int)gg.getGameStates()[1].getColor().blue << ", ";
+  std::cout << (int)gg.getGameStates()[1].getColor().green << ")\n";
   Point tr;
   Point bl;
   bl.setX(gg.getTerrainBounds().getBottomLeft().getX());
@@ -72,10 +74,13 @@ int main(int argc, char** argv) {
   QObject::connect(gridView, SIGNAL(gridClosed()), control, SLOT(close()));
 
   QTimer *timer = new QTimer;
-  timer->start(100);
+  timer->setInterval(100);
   QObject::connect(timer, SIGNAL(timeout()), gridView, SLOT(displayNextGen()));
   QObject::connect(control, SIGNAL(changeDelay(int)), timer, SLOT(start(int)));
+  QObject::connect(control, SIGNAL(pauseAnimation()), timer, SLOT(stop()));
+  QObject::connect(control, SIGNAL(playAnimation()), timer, SLOT(start()));
   QObject::connect(control, SIGNAL(changeZoom(int)), gridView, SLOT(changeZoom(int)));
+  QObject::connect(control, SIGNAL(stepGeneration()), gridView, SLOT(displayNextGen()));
 
   gridView->show();
   control->show();

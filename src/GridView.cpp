@@ -13,19 +13,13 @@ GridView::GridView(GameGrid& g, QWidget* parent)
   currentScaleFactor = 1;
   scene = new QGraphicsScene;
   setScene(scene);
-
   drawGrid();
-/*  for(int x = 0; x < size().width(); x += 10) {
-    scene->addLine(x, 0, x, size().height(), QPen(Qt::black));
-  }
-  for(int y = 0; y < size().height(); y += 10) {
-    scene->addLine(0, y, size().width(), y, QPen(Qt::black));
-  }
-*/
 }
 
 void GridView::displayNextGen() {
   grid = GolSimulator::simulate(grid, 1); 
+  scene->clear();
+  drawGrid();
 }
 
 void GridView::drawGrid() {
@@ -37,25 +31,25 @@ void GridView::drawGrid() {
   for(unsigned int y = 0; y < grid.getTerrainBounds().getHeight(); y++) {
     scene->addLine(0, y * cellSize, cellSize * grid.getTerrainBounds().getWidth(), y * cellSize, QPen(Qt::black));
   }
-  /* EXAMPLE DRAWING RECT
-  QGraphicsRectItem* rect = new QGraphicsRectItem(0,0,cellSize, cellSize);
-  rect->setBrush(QBrush(Qt::black));
-  scene->addItem(rect);
-  /* BAD CODE, FIX
   for(unsigned int x = 0; x < grid.getTerrainBounds().getWidth(); x++) {
     for(unsigned int y = 0; y < grid.getTerrainBounds().getHeight(); y++) {
-      if(grid.getSquareState(Point(x, y)).getNum() == 1) {
-        int yHigh = size().height() - grid.getTerrainBounds().getTopRight().getY() * cellSize;
-        int yLow = size().height() - grid.getTerrainBounds().getBottomLeft().getY() * cellSize;
-        std::cout << "Here!\n";
-        std::cout << "yHigh = " << yHigh << ", xHigh = " << yLow << "\n";
-        QGraphicsRectItem* rect = new QGraphicsRectItem(x * cellSize, yLow, x * cellSize + cellSize, yHigh);
-        rect->setBrush(QBrush(Qt::black));
-        scene->addItem(rect);
+      Point normalized(x + grid.getTerrainBounds().getBottomLeft().getX(), y + grid.getTerrainBounds().getBottomLeft().getY());
+      int topOriginY = grid.getTerrainBounds().getHeight() - y;
+      int cellTop = y * cellSize;
+      int cellBottom = cellTop + cellSize;
+      int cellLeft = x * cellSize;
+      int cellRight = cellLeft + cellSize;
+      QGraphicsRectItem* rect = new QGraphicsRectItem(cellLeft, cellTop, cellSize, cellSize);
+      StateColor color = grid.getSquareState(normalized).getColor();
+      if(grid.getSquareState(normalized).getNum() == 0) {
+        rect->setBrush(QBrush(QColor(color.red, color.green, color.blue)));
       }
+      if(grid.getSquareState(normalized).getNum() == 1) {
+        rect->setBrush(QBrush(QColor(color.red, color.green, color.blue)));
+      }
+      scene->addItem(rect);
     }
   }
-  */
 }
 
 void GridView::changeZoom(int factor) {

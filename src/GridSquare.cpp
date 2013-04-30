@@ -7,7 +7,7 @@ GridSquare::GridSquare() : state(0, '~', StateColor()) {
 
 GridSquare::GridSquare(const CellState& s) : state(s.getNum()) {
   StateColor color;
-  state.getColor(color);
+  state.setColor(color);
   state = CellState(state.getNum(), state.getChar(), color);
 }
 

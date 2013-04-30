@@ -2,10 +2,15 @@
 #define STATE_COLOR_H
 
 struct StateColor {
-  unsigned char rgb[3];
+  unsigned char red;
+  unsigned char green;
+  unsigned char blue;
   StateColor();
-  StateColor(char r, char g, char b);
-  void setRgb(char r, char g, char b);
+  StateColor(unsigned char r, unsigned char g, unsigned char b);
+  void setRgb(unsigned char r, unsigned char g, unsigned char b);
+  void setRed(unsigned char r);
+  void setGreen(unsigned char g);
+  void setBlue(unsigned char b);
 };
 
 #endif

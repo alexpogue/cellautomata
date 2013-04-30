@@ -11,6 +11,7 @@
 
 ControlDialog::ControlDialog(QWidget* parent) 
   : QDialog(parent) {
+  playing = false;
   setWindowTitle("Controls");
   zoomLabel = new QLabel(tr("Zoom factor:"));
   zoomSpinBox = new QSpinBox;
@@ -29,7 +30,10 @@ ControlDialog::ControlDialog(QWidget* parent)
 
   quitButton = new QPushButton(tr("Quit"));
   playPauseButton = new QPushButton(tr("Play"));
+  connect(playPauseButton, SIGNAL(clicked()), this, SLOT(playPauseClicked()));
+
   stepButton = new QPushButton(tr("Step"));
+  connect(stepButton, SIGNAL(clicked()), this, SLOT(stepClicked()));
 
   connect(zoomSpinBox, SIGNAL(valueChanged(int)), zoomSlider, SLOT(setValue(int)));
   connect(zoomSlider, SIGNAL(valueChanged(int)), zoomSpinBox, SLOT(setValue(int)));
@@ -78,10 +82,26 @@ void ControlDialog::closeEvent(QCloseEvent* event) {
   event->accept();
 }
 
+void ControlDialog::playPauseClicked() {
+  if(playing) {
+    emit pauseAnimation();
+    playPauseButton->setText("Play");
+  }
+  else {
+    emit playAnimation();
+    playPauseButton->setText("Pause");
+  }
+  playing = !playing; 
+}
+
 void ControlDialog::delayChanged(int newVal) {
   emit changeDelay(newVal);
 }
 
 void ControlDialog::zoomChanged(int newVal) {
   emit changeZoom(newVal);
+}
+
+void ControlDialog::stepClicked() {
+  emit stepGeneration();
 }
