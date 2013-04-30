@@ -1,7 +1,11 @@
 #include "AutWriter.h"
+#include "GameRules.h"
+
+std::string rulesToString(GameRules r);
 
 void AutWriter::write(const GameGrid& gg, std::ostream& out) {
   out << "Name \"" << gg.getName() << "\";\n";
+  out << "Rules \"" << rulesToString(gg.getRules()) << ";\"\n";
   if(gg.getNumCharsFromAut() > 0) {
     out << "Chars ";
     for(int i = 0; i < gg.getNumCharsFromAut(); i++) {
@@ -46,4 +50,22 @@ void AutWriter::write(const GameGrid& gg, std::ostream& out) {
     }
   }
   out << "};\n";
+}
+
+std::string rulesToString(GameRules rules) {
+  if(rules == RULES_CONWAYS_LIFE) {
+    return "ConwaysLife";
+  }
+  else if(rules == RULES_BRIANS_BRAIN) {
+    return "BriansBrain";
+  }
+  else if(rules == RULES_WIRE_WORLD) {
+    return "WireWorld";
+  }
+  else if(rules == RULES_LANGTONS_ANT) {
+    return "LangtonsAnt";
+  }
+  else {
+    return "unknown";
+  }
 }

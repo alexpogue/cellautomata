@@ -1,10 +1,10 @@
 #ifndef TUI_DISPLAY
 #define TUI_DISPLAY
 
-#include "GridDisplay.h"
 #include "GameGrid.h"
 
-class TuiDisplay : public GridDisplay {
+class TuiDisplay {
+    GameGrid& grid;
     Rect displayBounds;
     int generation;
     int delay;

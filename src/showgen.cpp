@@ -11,6 +11,9 @@
 #include "Point.h"
 #include "AutParser.h"
 #include "GolSimulator.h"
+#include "BbSimulator.h"
+#include "WwSimulator.h"
+#include "LaSimulator.h"
 #include "CellState.h"
 #include "GameRules.h"
 
@@ -137,7 +140,18 @@ int main(int argc, char** argv) {
   }
   gg.setWindowBounds(Rect(wbl, wtr));
   GameGrid newGrid(gg);
-  newGrid = GolSimulator::simulate(gg, numGenerations);
+  if(gg.getRules() == RULES_CONWAYS_LIFE) {
+    newGrid = GolSimulator::simulate(gg, numGenerations);
+  }
+  else if(gg.getRules() == RULES_BRIANS_BRAIN) {
+    newGrid = BbSimulator::simulate(gg, numGenerations);
+  }
+  else if(gg.getRules() == RULES_WIRE_WORLD) {
+    newGrid = WwSimulator::simulate(gg, numGenerations);
+  }
+  else if(gg.getRules() == RULES_LANGTONS_ANT) {
+    newGrid = LaSimulator::simulate(gg, numGenerations);
+  }
   newGrid.printToFile(std::cout, autOutput);
 }
 

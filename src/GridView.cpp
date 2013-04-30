@@ -5,6 +5,10 @@
 #include <QGraphicsRectItem>
 #include "GameGrid.h"
 #include "GolSimulator.h"
+#include "BbSimulator.h"
+#include "WwSimulator.h"
+#include "LaSimulator.h"
+#include "GameRules.h"
 
 GridView::GridView(GameGrid& g, QWidget* parent) 
   : QGraphicsView(parent),
@@ -17,7 +21,18 @@ GridView::GridView(GameGrid& g, QWidget* parent)
 }
 
 void GridView::displayNextGen() {
-  grid = GolSimulator::simulate(grid, 1); 
+  if(grid.getRules() == RULES_CONWAYS_LIFE) {
+    grid = GolSimulator::simulate(grid, 1); 
+  }
+  else if(grid.getRules() == RULES_BRIANS_BRAIN) {
+    grid = BbSimulator::simulate(grid, 1);
+  }
+  else if(grid.getRules() == RULES_WIRE_WORLD) {
+    grid = WwSimulator::simulate(grid, 1);
+  }
+  else if(grid.getRules() == RULES_LANGTONS_ANT) {
+    grid = LaSimulator::simulate(grid, 1);
+  }
   scene->clear();
   drawGrid();
 }
@@ -26,15 +41,9 @@ void GridView::drawGrid() {
   float cellSize;
   cellSize = float(size().width()) / grid.getTerrainBounds().getWidth(); 
   for(unsigned int x = 0; x < grid.getTerrainBounds().getWidth(); x++) {
-    scene->addLine(x * cellSize, 0, x * cellSize, cellSize * grid.getTerrainBounds().getHeight(), QPen(Qt::black));
-  }
-  for(unsigned int y = 0; y < grid.getTerrainBounds().getHeight(); y++) {
-    scene->addLine(0, y * cellSize, cellSize * grid.getTerrainBounds().getWidth(), y * cellSize, QPen(Qt::black));
-  }
-  for(unsigned int x = 0; x < grid.getTerrainBounds().getWidth(); x++) {
     for(unsigned int y = 0; y < grid.getTerrainBounds().getHeight(); y++) {
       Point normalized(x + grid.getTerrainBounds().getBottomLeft().getX(), y + grid.getTerrainBounds().getBottomLeft().getY());
-      int cellTop = y * cellSize;
+      int cellTop = size().height() - y * cellSize - cellSize;
       int cellLeft = x * cellSize;
       QGraphicsRectItem* rect = new QGraphicsRectItem(cellLeft, cellTop, cellSize, cellSize);
       StateColor color = grid.getSquareState(normalized).getColor();

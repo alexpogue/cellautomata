@@ -10,6 +10,7 @@
 
 struct ParseData {
   std::vector<Point> aliveCells;
+  std::vector<int> stateNums;
   Rect terrain;
   std::string name;
   std::string chars;
@@ -40,9 +41,11 @@ void handleNameArg(const std::string& kwStr, ParseData& pd);
 void handleCharsArgs(const std::string& kwStr, ParseData& pd);
 void handleColorsArgs(const std::string& kwStr, ParseData& pd);
 void printInitialStatementWarning(const std::string& kwStr, size_t startPos, size_t endPos);
-void handleInitialStatement(const std::string& statement, ParseData& pd);
+void handleInitialStatement(const std::string& statement, int& state, ParseData& pd);
+void handleYStatement(const std::string& statement, int currState, ParseData& pd);
+void handleStateStatement(const std::string& statement, int& state);
 void printCouldNotFindExpected(std::string expected, std::string keyword);
-size_t handleNextXVal(const std::string& kwStr, int yVal, size_t pos, ParseData& pd);
+size_t handleNextXVal(const std::string& kwStr, int yVal, int state, size_t pos, ParseData& pd);
 void getNextStatement(const std::string& wholeText, size_t pos, std::string& statement);
 bool strToIntExpectedBlock(const std::string& str, int& i, const std::string& expected, const std::string& block);
 void assignRangeArgs(const std::string& args, int& low, int& high);
@@ -75,7 +78,7 @@ void AutParser::parse(std::istream& file, GameGrid& gg) {
   gg.setWindowBounds(pd.terrain);
   gg.resetGrid();
   for(unsigned int i = 0; i < pd.aliveCells.size(); i++) {
-    gg.setSquare(pd.aliveCells[i], true);
+    gg.setSquare(pd.aliveCells[i], pd.stateNums[i]);
   }
   gg.setName(pd.name);
   gg.setGameStates(pd.chars);
@@ -137,7 +140,7 @@ void handleKeywordString(const std::string& keywordStr, ParseData& pd) {
     handleRulesArg(keywordStr, pd);
   }
   else if(k == KEYWORD_UNKNOWN) {
-    std::cout << "Warning: keyword \"" << keywordStr << "\" is unknown\n";
+    std::cerr << "Warning: keyword \"" << keywordStr << "\" is unknown\n";
   }
 }
 
@@ -171,10 +174,11 @@ Keyword getKeywordFromString(const std::string& keywordStr) {
 void handleInitialBlock(const std::string& kwStr, ParseData& pd) {
   size_t currPos = kwStr.find_first_of("{") + 1;
   size_t endBracketPos = kwStr.find_first_of("}");
+  int state = 1;
   std::string statementStr; 
   while(currPos < endBracketPos) {
     getNextStatement(kwStr, currPos, statementStr);
-    handleInitialStatement(statementStr, pd);
+    handleInitialStatement(statementStr, state, pd);
     currPos += statementStr.length();
   }
 }
@@ -184,7 +188,17 @@ void getNextStatement(const std::string& wholeText, size_t pos, std::string& sta
   statement = wholeText.substr(pos, semicolonPos - pos + 1);
 }
 
-void handleInitialStatement(const std::string& statement, ParseData& pd) {
+void handleInitialStatement(const std::string& statement, int& state, ParseData& pd) {
+  size_t firstCharPos = statement.find_first_not_of(" \t\r\n");
+  if(statement[firstCharPos] == 'Y') {
+    handleYStatement(statement, state, pd);
+  }
+  else if(statement.substr(firstCharPos, 5) == "State") {
+    handleStateStatement(statement, state);
+  }
+}
+
+void handleYStatement(const std::string& statement, int currState, ParseData& pd) {
   size_t equalsPos = statement.find_first_of("=");
   if(equalsPos == std::string::npos) {
     printCouldNotFindExpected("=", "initial");
@@ -202,11 +216,18 @@ void handleInitialStatement(const std::string& statement, ParseData& pd) {
   }
   size_t currPos = colonPos + 1;
   while(currPos < statement.length()) {
-    currPos = handleNextXVal(statement, yVal, currPos, pd);
+    currPos = handleNextXVal(statement, yVal, currState, currPos, pd);
   }
 }
 
-size_t handleNextXVal(const std::string& kwStr, int yVal, size_t pos, ParseData& pd) {
+void handleStateStatement(const std::string& statement, int& state) {
+  size_t numeralStart = statement.find_first_of("0123456789");
+  size_t numeralEnd = statement.find_last_of("0123456789");
+  std::string istr = statement.substr(numeralStart, numeralEnd - numeralStart + 1);
+  state = atoi(istr.c_str());
+}
+
+size_t handleNextXVal(const std::string& kwStr, int yVal, int state, size_t pos, ParseData& pd) {
   size_t xValEnd = kwStr.find_first_of(",;", pos);
   std::string xValStr = kwStr.substr(pos, xValEnd - pos);
   int xVal;
@@ -214,6 +235,7 @@ size_t handleNextXVal(const std::string& kwStr, int yVal, size_t pos, ParseData&
     return xValEnd + 1;
   }
   pd.aliveCells.push_back(Point(xVal, yVal));
+  pd.stateNums.push_back(state);
   return xValEnd + 1;
 }
 
@@ -228,11 +250,11 @@ bool strToIntExpectedBlock(const std::string& str, int& i, const std::string& ex
 }
 
 void printCouldNotFindExpected(std::string expected, std::string keyword) {
-  std::cout << "Warning: could not find expected identifier: `" << expected << "' in keyword: `" << keyword << "'\n";
+  std::cerr << "Warning: could not find expected identifier: `" << expected << "' in keyword: `" << keyword << "'\n";
 }
 
 void printInitialStatementWarning(const std::string& kwStr, size_t startPos, size_t endPos) {
-    std::cout << "Warning: unrecognized initial statement: " 
+    std::cerr << "Warning: unrecognized initial statement: " 
       << kwStr.substr(startPos, endPos - startPos + 1) << "\n";
 }
 
@@ -255,7 +277,7 @@ void handleYrangeArgs(const std::string& kwStr, ParseData& pd) {
 void assignRangeArgs(const std::string& args, int& low, int& high) {
   size_t dividerPos = args.find_first_of(" ");
   if(dividerPos == std::string::npos) {
-    std::cout << "Warning, could not find range arg divider\n";
+    std::cerr << "Warning, could not find range arg divider\n";
     return;
   }
   std::string lowStr = args.substr(0, dividerPos);
@@ -319,9 +341,9 @@ void handleColorsArgs(const std::string& kwStr, ParseData& pd) {
 
 void handleRulesArg(const std::string& kwStr, ParseData& pd) {
   pd.rulesGiven = true;
-  size_t firstLetter = kwStr.find_first_of("\"") + 1;
-  size_t endQuote = kwStr.find_first_of("\"", firstLetter);
-  pd.rules = convertToGameRules(kwStr.substr(firstLetter, endQuote - firstLetter)); 
+  size_t firstLetter = kwStr.find_first_of(" ") + 1;
+  size_t lastLetter = kwStr.length() - 1;
+  pd.rules = convertToGameRules(kwStr.substr(firstLetter, lastLetter - firstLetter + 1)); 
 }
 
 GameRules convertToGameRules(const std::string& ruleStr) {

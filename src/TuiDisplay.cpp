@@ -1,12 +1,11 @@
 #include "TuiDisplay.h"
-#include "GridDisplay.h"
 #include "GolSimulator.h"
 #include <stdexcept>
 #include <vector>
 #include <ncurses.h>
 
 TuiDisplay::TuiDisplay(GameGrid& g) : 
-  GridDisplay(g) {}
+  grid(g) {}
 
 void TuiDisplay::open() {
   generation = 0;

@@ -6,12 +6,14 @@
 #include <QHBoxLayout>
 #include <QVBoxLayout>
 #include <QCloseEvent>
+#include <sstream>
 /* TEST */
 #include <iostream>
 
 ControlDialog::ControlDialog(QWidget* parent) 
   : QDialog(parent) {
   playing = false;
+  genCount = 0;
   setWindowTitle("Controls");
   zoomLabel = new QLabel(tr("Zoom factor:"));
   zoomSpinBox = new QSpinBox;
@@ -105,3 +107,11 @@ void ControlDialog::zoomChanged(int newVal) {
 void ControlDialog::stepClicked() {
   emit stepGeneration();
 }
+
+void ControlDialog::updateGenCount() {
+  genCount++;
+  std::stringstream ss;
+  ss << genCount;
+  genNumLabel->setText(ss.str().c_str());
+}
+

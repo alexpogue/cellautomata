@@ -1,0 +1,61 @@
+CS229 Cellular Automata (CS229 Project 2) README
+
+OVERVIEW:
+
+  The programs in this package display and simulate various cellular automata
+  simulations. Namely, it can handle Conway's Game of Life, Brian's Brain, Wire
+  World, and Langton's Ant.
+
+PROGRAMS:
+
+  The programs consist of showgen (standard output display), sim-tui (text user
+  interface display with animation), and sim-gui (graphical user interface 
+  using the Qt library).
+
+  showgen:
+    Showgen reads an aut file, simulates a given number of generations (defaults 
+    to 0), and prints the result
+
+    Usage: ./showgen [options] file.aut
+
+    Options:
+    -a              output as aut file (otherwise ASCII display)
+    -g n            simulate n generations
+    -tx l,h         set x range of terrain (overrides aut bounds)
+    -ty l,h         set y range of terrain (overrides aut bounds)
+    -wx l,h         set x range for output window (defaults to terrain x bounds)
+    -wy l,h         set y range for output window (defaults to terrain y bounds
+
+  sim-tui:
+    sim-tui provides a text-based visualization of various cellular automata 
+    simulations
+
+    Usage: ./sim-tui [options] inputFile.aut
+
+    Options:
+    -h              Display this help screen
+    -tx l,h         Set the x-axis terrain range to [l, h] (inclusive)
+    -ty l,h         Set the y-axis terrain range to [l, h] (inclusive)
+
+  sim-gui:
+    sim-gui provides a visualization (graphical user interface) of various 
+    cellular automata simulations
+
+    Usage: ./sim-gui [options] inputFile.aut
+
+    Options:
+    -h              Display this help screen
+    -tx l,h         Set the x-axis terrain range to [l, h] (inclusive)
+    -ty l,h         Set the y-axis terrain range to [l, h] (inclusive)
+
+SOURCE FILES:
+
+Point.cpp/Point.h: For xy-coordinate position. Used to access grid cells.
+
+Rect.cpp/Rect.h: Stores 2D boundaries, mainly for keeping track of grid bounds.
+
+CellState.cpp/CellState.h: One per grid position: color, char, and state number.
+
+GridSquare.cpp/GridSquare.h: Single position on grid. Each has a CellState.
+
+GameGrid.cpp/GameGrid.h: Data for main grid and methods to access and mutate it

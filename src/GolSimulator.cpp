@@ -2,18 +2,18 @@
 /* TODO: REMOVE IOSTREAM */
 #include <iostream>
 
-GameGrid simulateGeneration(const GameGrid& gg);
+GameGrid simulateGolGeneration(const GameGrid& gg);
 char getNumAliveNeighbors(const GameGrid& gg, Point loc);
 
 GameGrid GolSimulator::simulate(const GameGrid& gg, const unsigned int& numGenerations) {
   GameGrid ret(gg);
   for(unsigned int i = 0; i < numGenerations; i++) {
-    ret = simulateGeneration(ret);
+    ret = simulateGolGeneration(ret);
   }
   return ret;
 }
 
-GameGrid simulateGeneration(const GameGrid& gg) {
+GameGrid simulateGolGeneration(const GameGrid& gg) {
   GameGrid dest(gg);
   for(int i = dest.getTerrainBounds().getBottomLeft().getY(); i <= dest.getTerrainBounds().getTopRight().getY(); i++) {
     for(int j = dest.getTerrainBounds().getBottomLeft().getX(); j <= dest.getTerrainBounds().getTopRight().getX(); j++) {
@@ -44,10 +44,6 @@ char getNumAliveNeighbors(const GameGrid& grid, Point loc) {
       Point check(j, i);
       if(grid.isInBounds(check) && grid.getSquareState(check).getNum() == 1) {
         ++num;
-      }
-      else if(!grid.isInBounds(check)) {
-      }
-      else {
       }
     }
   }

@@ -25,9 +25,12 @@ class ControlDialog : public QDialog {
     void stepClicked();
     void delayChanged(int newVal);
     void zoomChanged(int newVal);
+  public slots:
+    void updateGenCount();
   private:
     bool playing;
     void closeEvent(QCloseEvent* event);
+    unsigned int genCount;
     QLabel* zoomLabel;
     QSpinBox* zoomSpinBox;
     QSlider* zoomSlider;

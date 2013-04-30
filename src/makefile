@@ -1,12 +1,12 @@
 all: showgen sim-tui sim-gui #test
 
-showgen: showgen.o GameGrid.o GridSquare.o Point.o Rect.o AutParser.o AutPreprocessor.o GolSimulator.o AutWriter.o CellState.o StateColor.o
-	g++ -o showgen showgen.o GameGrid.o GridSquare.o Point.o Rect.o AutParser.o AutPreprocessor.o GolSimulator.o AutWriter.o CellState.o StateColor.o
+showgen: showgen.o GameGrid.o GridSquare.o Point.o Rect.o AutParser.o AutPreprocessor.o GolSimulator.o AutWriter.o CellState.o StateColor.o BbSimulator.o WwSimulator.o LaSimulator.o
+	g++ -o showgen showgen.o GameGrid.o GridSquare.o Point.o Rect.o AutParser.o AutPreprocessor.o GolSimulator.o AutWriter.o CellState.o StateColor.o BbSimulator.o WwSimulator.o LaSimulator.o
 
 sim-tui: sim-tui.o GameGrid.o Point.o GridSquare.o CellState.o Rect.o AutWriter.o AutParser.o AutPreprocessor.o TuiDisplay.o GridDisplay.o GolSimulator.o StateColor.o
 	g++ -o sim-tui sim-tui.o GameGrid.o Point.o GridSquare.o CellState.o Rect.o AutWriter.o AutParser.o AutPreprocessor.o TuiDisplay.o GridDisplay.o GolSimulator.o StateColor.o -lncurses
 
-sim-gui: sim-gui.cpp GridView.cpp GridView.h ControlDialog.cpp ControlDialog.h makefileqt AutParser.o GameGrid.o AutPreprocessor.o #class.o ensures we have class's dependencies before making
+sim-gui: sim-gui.cpp GridView.cpp GridView.h ControlDialog.cpp ControlDialog.h GameRules.h makefileqt AutParser.o GameGrid.o AutPreprocessor.o #class.o ensures we have class's dependencies before making
 	make -f makefileqt
 
 makefileqt: sim-gui.pro
@@ -43,7 +43,16 @@ AutPreprocessor.o: AutPreprocessor.cpp AutPreprocessor.h
 GolSimulator.o: GolSimulator.cpp GolSimulator.h GameGrid.h
 	g++ -g -Wall -pedantic -c GolSimulator.cpp
 
-AutWriter.o: AutWriter.cpp AutWriter.h GameGrid.h
+BbSimulator.o: BbSimulator.cpp BbSimulator.h GameGrid.h
+	g++ -g -Wall -pedantic -c BbSimulator.cpp
+
+WwSimulator.o: WwSimulator.cpp WwSimulator.h GameGrid.h
+	g++ -g -Wall -pedantic -c WwSimulator.cpp
+
+LaSimulator.o: LaSimulator.cpp LaSimulator.h GameGrid.h
+	g++ -g -Wall -pedantic -c LaSimulator.cpp
+
+AutWriter.o: AutWriter.cpp AutWriter.h GameGrid.h GameRules.h
 	g++ -g -Wall -pedantic -c AutWriter.cpp
 
 GridDisplay.o: GridDisplay.cpp GridDisplay.h
