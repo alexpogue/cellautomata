@@ -34,13 +34,16 @@ int main(int argc, char** argv) {
   }
   Rect terrainBounds(Point(txLow, tyLow), Point(txHigh, tyHigh));
   GameGrid gg;
+
+  std::ifstream file;
+  file.exceptions(std::ios::failbit);
   try {
-    AutParser::parse(autFilename, gg);
-  }
-  catch(std::ifstream::failure e) {
-    std::cerr << "Could not open file: " << autFilename << "\n";
+    file.open(autFilename.c_str());
+  } catch(std::ifstream::failure e) {
+    std::cerr << "Could not open file\n";
     exit(1);
   }
+  AutParser::parse(file, gg);
   Point tr;
   Point bl;
   bl.setX(gg.getTerrainBounds().getBottomLeft().getX());

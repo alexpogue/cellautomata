@@ -34,11 +34,8 @@ void GridView::drawGrid() {
   for(unsigned int x = 0; x < grid.getTerrainBounds().getWidth(); x++) {
     for(unsigned int y = 0; y < grid.getTerrainBounds().getHeight(); y++) {
       Point normalized(x + grid.getTerrainBounds().getBottomLeft().getX(), y + grid.getTerrainBounds().getBottomLeft().getY());
-      int topOriginY = grid.getTerrainBounds().getHeight() - y;
       int cellTop = y * cellSize;
-      int cellBottom = cellTop + cellSize;
       int cellLeft = x * cellSize;
-      int cellRight = cellLeft + cellSize;
       QGraphicsRectItem* rect = new QGraphicsRectItem(cellLeft, cellTop, cellSize, cellSize);
       StateColor color = grid.getSquareState(normalized).getColor();
       if(grid.getSquareState(normalized).getNum() == 0) {
@@ -61,7 +58,7 @@ void GridView::closeEvent(QCloseEvent* event) {
   event->accept();
 }
 
-void GridView::resizeEvent(QResizeEvent* event) {
+void GridView::resizeEvent(QResizeEvent*) {
   scene->clear();
   drawGrid();
 }

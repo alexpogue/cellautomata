@@ -37,17 +37,19 @@ int main(int argc, char** argv) {
   }
   Rect terrainBounds(Point(txLow, tyLow), Point(txHigh, tyHigh));
   GameGrid gg;
+
+  std::ifstream file;
+  file.exceptions(std::ios::failbit);
   try {
-    AutParser::parse(autFilename, gg);
-  }
-  catch(std::ifstream::failure e) {
-    std::cerr << "Could not open file: " << autFilename << "\n";
+    file.open(autFilename.c_str());
+  } catch(std::ifstream::failure e) {
+    std::cerr << "Could not open file\n";
     exit(1);
   }
-  std::cout << "state 0's rgb = (" << (int)gg.getGameStates()[0].getColor().red << ", ";
+  AutParser::parse(file, gg);
+
   std::cout << (int)gg.getGameStates()[0].getColor().blue << ", ";
   std::cout << (int)gg.getGameStates()[0].getColor().green << ")\n";
-  std::cout << "state 1's rgb = (" << (int)gg.getGameStates()[1].getColor().red << ", ";
   std::cout << (int)gg.getGameStates()[1].getColor().blue << ", ";
   std::cout << (int)gg.getGameStates()[1].getColor().green << ")\n";
   Point tr;

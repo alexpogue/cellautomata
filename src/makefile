@@ -22,7 +22,7 @@ showgen.o: showgen.cpp GameGrid.h Rect.h Point.h AutParser.h
 sim-tui.o: sim-tui.cpp GameGrid.h
 	g++ -g -Wall -pedantic -c sim-tui.cpp
 
-GameGrid.o: GameGrid.cpp GameGrid.h GridSquare.h Point.h Rect.h AutWriter.h
+GameGrid.o: GameGrid.cpp GameGrid.h GridSquare.h Point.h Rect.h AutWriter.h GameRules.h
 	g++ -g -Wall -pedantic -c GameGrid.cpp
 
 GridSquare.o: GridSquare.cpp GridSquare.h Point.h
@@ -61,7 +61,7 @@ TestMain.o: TestMain.cpp
 AutPreprocessorTest.o: AutPreprocessorTest.cpp AutPreprocessor.h
 	g++ -g -Wall -pedantic -c AutPreprocessorTest.cpp
 
-AutParser.o: AutParser.cpp AutParser.h GameGrid.h
+AutParser.o: AutParser.cpp AutParser.h GameGrid.h GameRules.h
 	g++ -g -Wall -pedantic -c AutParser.cpp
 
 AutParserTest.o: AutParserTest.cpp AutParser.h GameGrid.h Rect.h Point.h

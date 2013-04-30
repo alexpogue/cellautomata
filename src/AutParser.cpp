@@ -5,14 +5,17 @@
 #include <iostream>
 #include <sstream>
 #include <fstream>
+#include <cstdio>
+#include "GameRules.h"
 
 struct ParseData {
   std::vector<Point> aliveCells;
   Rect terrain;
   std::string name;
   std::string chars;
-  std::string rules;
+  GameRules rules;
   std::vector<StateColor> colors;
+  bool rulesGiven;
 };
 
 enum Keyword {
@@ -22,7 +25,8 @@ enum Keyword {
   KEYWORD_UNKNOWN,
   KEYWORD_NAME,
   KEYWORD_CHARS,
-  KEYWORD_COLORS
+  KEYWORD_COLORS,
+  KEYWORD_RULES
 };
 
 size_t parseNextKeyword(const std::string& autText, size_t pos, ParseData& pd);
@@ -42,20 +46,26 @@ size_t handleNextXVal(const std::string& kwStr, int yVal, size_t pos, ParseData&
 void getNextStatement(const std::string& wholeText, size_t pos, std::string& statement);
 bool strToIntExpectedBlock(const std::string& str, int& i, const std::string& expected, const std::string& block);
 void assignRangeArgs(const std::string& args, int& low, int& high);
+void handleRulesArg(const std::string& kwStr, ParseData& pd); 
+GameRules convertToGameRules(const std::string& ruleStr);
 
-void AutParser::parse(const std::string& fileName, GameGrid& gg) {
-  std::ifstream file;
-  file.exceptions(std::ios::failbit);
-  try {
-    file.open(fileName.c_str());
-  } catch(std::ifstream::failure e) {
-    throw;
+void AutParser::parse(std::istream& file, GameGrid& gg) {
+  std::string rawAutText;
+  if(&file == &std::cin/* && !std::cin.eof()*/) {
+    for(;;) {
+      int readChar = file.get();
+      if(readChar == EOF) break;
+      rawAutText += readChar;
+    }
   }
-  std::stringstream ss;
-  ss << file.rdbuf();
-  std::string rawAutText(ss.str());
+  else {
+    std::stringstream ss;
+    ss << file.rdbuf();
+    rawAutText = ss.str();
+  }
   std::string preprocessedText = AutPreprocessor::preprocess(rawAutText);
   ParseData pd;
+  pd.rulesGiven = false;
   size_t autLength = preprocessedText.length();
   size_t pos = 0;
   while(pos < autLength) {
@@ -70,6 +80,15 @@ void AutParser::parse(const std::string& fileName, GameGrid& gg) {
   gg.setName(pd.name);
   gg.setGameStates(pd.chars);
   gg.setGameStateColors(pd.colors);
+  /* TODO: consider using rules to ignore state assignments 
+            (ex. Conway only needs 2 states) */
+  if(pd.rulesGiven) {
+    gg.setRules(pd.rules);
+  }
+  else {
+    std::cerr << "Warning: no Rules declaration in file, defaulting to ConwaysLife\n";
+    gg.setRules(RULES_CONWAYS_LIFE);
+  }
 }
 
 size_t parseNextKeyword(const std::string& autText, size_t pos, ParseData& pd) {
@@ -114,6 +133,9 @@ void handleKeywordString(const std::string& keywordStr, ParseData& pd) {
   else if(k == KEYWORD_COLORS) {
     handleColorsArgs(keywordStr, pd);
   }
+  else if(k == KEYWORD_RULES) {
+    handleRulesArg(keywordStr, pd);
+  }
   else if(k == KEYWORD_UNKNOWN) {
     std::cout << "Warning: keyword \"" << keywordStr << "\" is unknown\n";
   }
@@ -137,6 +159,9 @@ Keyword getKeywordFromString(const std::string& keywordStr) {
   }
   else if(keywordStr.substr(0, 6) == "Colors") {
     return KEYWORD_COLORS;
+  }
+  else if(keywordStr.substr(0, 5) == "Rules") {
+    return KEYWORD_RULES;
   }
   else {
     return KEYWORD_UNKNOWN;
@@ -289,5 +314,31 @@ void handleColorsArgs(const std::string& kwStr, ParseData& pd) {
       commaPos = kwStr.find_first_of(",;", commaPos + 1);
     }
     pd.colors.push_back(color);
+  }
+}
+
+void handleRulesArg(const std::string& kwStr, ParseData& pd) {
+  pd.rulesGiven = true;
+  size_t firstLetter = kwStr.find_first_of("\"") + 1;
+  size_t endQuote = kwStr.find_first_of("\"", firstLetter);
+  pd.rules = convertToGameRules(kwStr.substr(firstLetter, endQuote - firstLetter)); 
+}
+
+GameRules convertToGameRules(const std::string& ruleStr) {
+  if(ruleStr.substr(0, 11) == "ConwaysLife") {
+    return RULES_CONWAYS_LIFE;
+  }
+  else if(ruleStr.substr(0, 11) == "BriansBrain") {
+    return RULES_BRIANS_BRAIN;
+  }
+  else if(ruleStr.substr(0, 9) == "WireWorld") {
+    return RULES_WIRE_WORLD;
+  }
+  else if(ruleStr.substr(0, 11) == "LangtonsAnt") {
+    return RULES_LANGTONS_ANT;
+  }
+  else {
+    std::cerr << "Unidentified rules: `" << ruleStr << "'. Defaulting to Conway's Life\n";
+    return RULES_CONWAYS_LIFE;
   }
 }

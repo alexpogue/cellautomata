@@ -41,6 +41,8 @@ void GameGrid::initialize(const Rect& terrain, const Rect& window, const std::ve
   terrainBounds = Rect(terrain);
   windowBounds = Rect(window);
   gameStates = std::vector<CellState>(states);
+  numCharsFromAut = gameStates.size();
+  numColorsFromAut = gameStates.size();
   for(int i = gameStates.size(); i < 10; i++) {
     if(i == 0) {
       gameStates.push_back(CellState(0, '~', defaultColors[0]));
@@ -273,12 +275,14 @@ void GameGrid::setGameStates(const std::vector<CellState>& states) {
 }
 
 void GameGrid::setGameStates(const std::string& chars) {
+  numCharsFromAut = chars.length(); 
   for(unsigned int i = 0; i < chars.length(); i++) {
-    CellState toSet(i, chars[i], StateColor());
     if(i >= gameStates.size()) {
+      CellState toSet(i, chars[i], defaultColors[i]);
       gameStates.push_back(toSet);
     }
     else {
+      CellState toSet(i, chars[i], gameStates[i].getColor());
       gameStates[i] = toSet;
     }
   }
@@ -286,6 +290,7 @@ void GameGrid::setGameStates(const std::string& chars) {
 }
 
 void GameGrid::setGameStateColors(const std::vector<StateColor>& colors) {
+  numColorsFromAut = colors.size();
   for(unsigned char i = 0; i < colors.size(); i++) {
     if(i >= gameStates.size()) {
       CellState toSet(i, '0' + i, colors[i]);
@@ -309,4 +314,20 @@ void GameGrid::refillStates() {
 
 std::vector<CellState> GameGrid::getGameStates() const {
   return gameStates;
+}
+
+int GameGrid::getNumCharsFromAut() const {
+  return numCharsFromAut;
+}
+
+int GameGrid::getNumColorsFromAut() const {
+  return numColorsFromAut;
+}
+
+GameRules GameGrid::getRules() const {
+  return rules;
+}
+
+void GameGrid::setRules(GameRules r) {
+  rules = r;
 }

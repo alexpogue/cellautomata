@@ -1,5 +1,6 @@
 #ifndef GAME_GRID_H
 #define GAME_GRID_H
+#include "GameRules.h"
 
 /**
   Grid 2D array representation:
@@ -22,16 +23,20 @@
 #include "GridSquare.h"
 #include "Point.h"
 #include "Rect.h"
+#include "GameRules.h"
 #include <ostream>
 #include <vector>
 
 class GameGrid {
   private:
+    GameRules rules;
     std::vector< std::vector<GridSquare> > grid;
     std::vector<CellState> gameStates;
     std::string name;
     Rect terrainBounds;
     Rect windowBounds;
+    int numColorsFromAut;
+    int numCharsFromAut;
     void printRow(const int& row, std::ostream& outStream) const;
     void initialize(const Rect& terrainBounds, const Rect& windowBounds);
     void serializePoint(unsigned int& serialX, unsigned int& serialY, const Point& p) const;
@@ -73,9 +78,11 @@ class GameGrid {
     void setGameStates(const std::vector<CellState>& states);
     void setGameStates(const std::string& charStates);
     void setGameStateColors(const std::vector<StateColor>& colors); 
-
-    /* DEBUG TEST*/
     std::vector<CellState> getGameStates() const;
+    int getNumCharsFromAut() const;
+    int getNumColorsFromAut() const;
+    GameRules getRules() const;
+    void setRules(GameRules rules);
 };
 
 #endif

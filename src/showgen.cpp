@@ -12,6 +12,7 @@
 #include "AutParser.h"
 #include "GolSimulator.h"
 #include "CellState.h"
+#include "GameRules.h"
 
 typedef enum {
   CONVERSION_SUCCESS,
@@ -41,7 +42,7 @@ conversionStatus_t handleSwitchIntInt(char* str, int& i1, int& i2);
 */
 cmdParseStatus_t readCommandLineArgs(int argc, char** argv, bool& autOutput, 
   bool& dispHelp, bool& txGiven, bool& tyGiven, bool& wxGiven, bool& wyGiven, 
-  bool& genGiven, int& numGenerations, int& txLow, int& txHigh, 
+  bool& genGiven, bool& fileGiven, int& numGenerations, int& txLow, int& txHigh, 
   int& tyLow, int& tyHigh, int& wxLow, int& wxHigh, int& wyLow, int& wyHigh, 
   std::string& inputFile);
 
@@ -63,13 +64,13 @@ void printCmdParseError(cmdParseStatus_t parseStatus);
 void printHelp(char* cmd);
 
 int main(int argc, char** argv) {
-  bool autOutput, dispHelp, txGiven, tyGiven, wxGiven, wyGiven, genGiven;
+  bool autOutput, dispHelp, txGiven, tyGiven, wxGiven, wyGiven, genGiven, fileGiven;
   int numGenerations;
   int txLow, txHigh, tyLow, tyHigh, wxLow, wxHigh, wyLow, wyHigh;
   std::string inputFile;
   cmdParseStatus_t cmdStatus;
   cmdStatus = readCommandLineArgs(argc, argv, autOutput, dispHelp, txGiven, 
-    tyGiven, wxGiven, wyGiven, genGiven, numGenerations, txLow, txHigh, tyLow, 
+    tyGiven, wxGiven, wyGiven, genGiven, fileGiven, numGenerations, txLow, txHigh, tyLow, 
     tyHigh, wxLow, wxHigh, wyLow, wyHigh, inputFile);
   if(cmdStatus != CMDPARSE_SUCCESS) {
     printCmdParseError(cmdStatus);
@@ -88,12 +89,25 @@ int main(int argc, char** argv) {
   Point tr;
 
   GameGrid gg;
-  try {
-    AutParser::parse(inputFile, gg);
-  } catch(std::ifstream::failure e) {
-    std::cerr << "Could not open file\n";
-    exit(1);
+
+  std::ifstream file;
+  std::istream* fileOrCin;
+  if(fileGiven) {
+    file.exceptions(std::ios::failbit);
+    try {
+      file.open(inputFile.c_str());
+    } catch(std::ifstream::failure e) {
+      std::cerr << "Could not open file\n";
+      exit(1);
+    }
+    fileOrCin = &file;
   }
+  else {
+    fileOrCin = &std::cin;
+  }
+
+  AutParser::parse(*fileOrCin, gg);
+
   bl.setX(gg.getTerrainBounds().getBottomLeft().getX());
   bl.setY(gg.getTerrainBounds().getBottomLeft().getY());
   tr.setX(gg.getTerrainBounds().getTopRight().getX());
@@ -129,11 +143,11 @@ int main(int argc, char** argv) {
 
 cmdParseStatus_t readCommandLineArgs(int argc, char** argv, bool& autOutput, 
   bool& dispHelp, bool& txGiven, bool& tyGiven, bool& wxGiven, bool& wyGiven, 
-  bool& genGiven, int& numGenerations, int& txLow, int& txHigh, 
+  bool& genGiven, bool& fileGiven, int& numGenerations, int& txLow, int& txHigh, 
   int& tyLow, int& tyHigh, int& wxLow, int& wxHigh, int& wyLow, int& wyHigh, 
   std::string& inputFile) {
   conversionStatus_t convStatus;
-  autOutput = dispHelp = txGiven = tyGiven = wxGiven = wyGiven = genGiven = false;
+  autOutput = dispHelp = txGiven = tyGiven = wxGiven = wyGiven = genGiven = fileGiven = false;
   inputFile = "";
   numGenerations = 0;
   for(int i = 1; i < argc; i++) {
@@ -191,6 +205,7 @@ cmdParseStatus_t readCommandLineArgs(int argc, char** argv, bool& autOutput,
     }
     else {
       inputFile = std::string(argv[i]);
+      fileGiven = true;
     }
   }
   return CMDPARSE_SUCCESS;
