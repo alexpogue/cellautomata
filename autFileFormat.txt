@@ -1,0 +1,145 @@
+From the assignment description by Dr. Andrew Miner
+(his website http://www.cs.iastate.edu/~asminer)
+
+.aut file format
+
+The .aut file format is a simple, free-form text file that contains statements
+of the form 
+
+Keyword <data>;
+
+where keywords are case-sensitive strings of letters, and the <data> section is
+dependent on the keyword. Statements may include an arbitrary amount of 
+whitespace (including newlines) between keywords and symbols. The character '#'
+means to ignore the rest of the line, and counts as a section of whitespace. A
+<data> section may consist of a compound statement, of the form 
+{ <stmt>; <stmt}; }, where each <stmt> is another statement. However, there will
+not be nested compound statements. Except for compound statements, no <data> 
+section will contain a semicolon.
+
+You must handle the following keywords. Statements with other keywords should
+be ignored, by consuming the file until the end of the statement, and printing a
+warning message to standard error. 
+
+    Name      Sets the name of the simulation, which should be displayed by the
+              simulators. This statement must coem before the Initial statement,
+              and has the format
+
+                Name "name string";
+
+              where a name string is allowed to contain any character except '"'.
+
+    Xrange    Sets the x range of the terrain. A statement is of the form 
+              Xrange xlow xhigh; where xlow and xhigh are integers.
+
+    Yrange    Sets the y range of the terrain. A statement is of the form 
+              Yrange ylow yhigh; where ylow and yhigh are integers. 
+
+    Rules     Sets the type of the automaton. This statement must appear after
+              the Xrange and Yrange statements, and before the Chars, Colors, 
+              and Initial statements. The format is
+
+                Rules Identifier;
+                
+              where Identifier is either "ConwaysLife", "BriansBrain", 
+              "WireWorld", or "LangtonsAnt". If this statement is missing, the
+              default should be “ConwaysLife”.
+
+    State     This statement appears inside an Initial statement, and sets the
+              state value for all following coordinates. The format is:
+
+                State <integer>;
+
+              Before the first State statement, the state value is one.
+              Valid states for each automaton are given in Appendix A.
+
+    Chars     Sets the characters to use for displaying each state. This 
+              statement must come before the Initial statement. Format: 
+              
+                Chars state0, state1, ..., state[n];
+
+              i.e., characters are specified for each of the n+1 states.
+              
+              where the characters are specified as ASCII codes (in base 10). 
+              These values should be ignored by sim-gui.
+
+    Colors    Sets the colors to use for displaying each state. This statement
+              must come before the Initial statement. Format:
+    
+                Colors (r0, g0, b0), (r1, g1, b1), ..., (r[n], g[n], b[n]);
+
+              i.e., colors specified for each of the n+1 states
+    
+              Each of these values should be between 0 and 255, in base 10. 
+              These values should be ignored by showgen and sim-tui.
+
+    Initial   Sets the configuration of generation 0, by specifying which cells
+              are alive. This statement must be the last statement. This is a 
+              compound statement of the form
+
+                Initial { <initstmt>; <initstmt>; };
+
+              where each <initstmt> specifies the positions of some alive cells.
+              Anything not specified as alive defaults to dead.
+
+              An <initstmt> has the form
+
+                Y = y : <xlist>;
+              
+              where <xlist> is a comma–separated list of x values.
+                                     
+The file shown in Figure 1 is an example of a legal .aut file.
+ _____________________________________________________________________________
+|                                                                             |
+| Name "Diode";                                                               |
+| Xrange -20 20;                                                              |
+| Yrange -10 10;                                                              |
+| Rules WireWorld;                                                            |
+| Chars 32, 35, 43, 46;                                                       |
+| Colors (64, 64, 64), (255, 64, 64), (255, 64, 255), (64, 64, 255);          |
+| Initial {                                                                   |
+|   # Set these to state 1                                                    |
+|     Y= 3: -9;                                                               |
+|     Y=-3: -9;                                                               |
+|   State 2; # The following are set to state 2                               |
+|     Y= 3: -10;                                                              |
+|     Y=-3: -10;                                                              |
+|   State 3; # The following are set to state 3                               |
+|     Y= 3: -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10;    |
+|     Y= 2: -1, 0;                                                            |
+|     Y= 4: -1, 0;                                                            |
+|     Y=-3: -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10;    |
+|     Y=-2:  0, 1;                                                            |
+|     Y=-4:  0, 1;                                                            |
+| };                                                                          |
+|_____________________________________________________________________________|
+             Figure 1: Example .aut file for two wireworld diodes.
+
+Appendix A: Valid states for each automaton
+
+0.0   Conway's Life
+  0. Dead
+  1. Alive
+
+0.1   Brian's Brain
+  0. Off
+  1. Dying
+  2. On
+
+0.2   Wire World
+  0. Empty
+  1. Electron head
+  2. Electron tail
+  3. Wire
+
+0.3   Langton's Ant
+  0. White, no ant
+  1. Black, no ant
+  2. White, ant facing north
+  3. White, ant facing east
+  4. White, ant facing south
+  5. White, ant facing west
+  6. Black, ant facing north
+  7. Black, ant facing east
+  8. Black, ant facing south
+  9. Black, ant facing west
