@@ -1,0 +1,1 @@
+This bogus keyword should cause everything to be ignored until the next semicolon, allowing for future expansion;Another{more evil bogus keyword;we must also consume;the inner bogus statements;};Xrange -10 10;Yrange -5 5;Initial{Y=2:-1;Y=1:-2,-1;Y=-1;2,3,4;};

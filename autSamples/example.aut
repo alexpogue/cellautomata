@@ -1,0 +1,19 @@
+#
+# Comments, to be ignored
+#
+
+This bogus keyword should cause everything to be ignored
+until the next semicolon, allowing for future expansion ;
+
+Another { more evil bogus keyword; we must also consume;
+  the inner bogus statements; };
+
+# Ugly formatting, but allowed:
+Xrange
+-10 10; Yrange -5 5;
+
+Initial {
+  Y = 2 :   -1;         # Sets (-1, 2) to "alive"
+  Y=1:      -2, -1;     # Sets (-2, 1) and (-1, 1) to "alive"
+  Y=-1:     2,3,4;      # Sets (2, -1), (3, -1), and (4, -1) to "alive"
+};

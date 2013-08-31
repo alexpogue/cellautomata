@@ -1,0 +1,21 @@
+Name "Diode";
+Xrange -20 20;
+Yrange -10 10;
+Rules WireWorld;
+Chars 32, 35, 43, 46;
+Colors (64, 64, 64), (255, 64, 64), (255, 64, 255), (64, 64, 255);
+Initial {
+  # Set these to state 1
+    Y= 3: -9;
+    Y=-3: -9;
+  State 2; # The following are set to state 2
+    Y= 3: -10;
+    Y=-3: -10;
+  State 3; # The following are set to state 3
+    Y= 3: -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10;
+    Y= 2: -1, 0;
+    Y= 4: -1, 0;
+    Y=-3: -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10;
+    Y=-2:  0, 1;
+    Y=-4:  0, 1;
+}; 
