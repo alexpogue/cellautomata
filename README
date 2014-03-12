@@ -6,15 +6,21 @@ OVERVIEW:
   simulations. Namely, it can handle Conway's Game of Life, Brian's Brain, Wire
   World, and Langton's Ant.
 
+LICENSE:
+
+  This work is licensed under The MIT License (see LICENSE.txt)
+
 PROGRAMS:
 
   The programs consist of showgen (standard output display), sim-tui (text user
   interface display with animation), and sim-gui (graphical user interface 
-  using the Qt library).
+  using the Qt library). Initial configuration of each automata is specified by
+  a .aut file. The .aut specification can be found in autFileFormat.txt, and 
+  some example aut files can be found in the autSamples directory.
 
   showgen:
-    Showgen reads an aut file, simulates a given number of generations (defaults 
-    to 0), and prints the result
+    Showgen prints the automata results after simulating a user-provided 
+    number of generations (default is 0), and prints the result.
 
     Usage: ./showgen [options] file.aut
 
